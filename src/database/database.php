@@ -1,5 +1,5 @@
 <?php
-    require_once 'db.php';
+    // require_once 'db.php';
 
     class __Database
     {
@@ -94,11 +94,8 @@
             try {
                 $result = __Database::connectorDB()->query($sql);
 
-                if($result) {
-                    return $result;
-                } else {
-                    return $msg = ["message"=>"Error"];
-                }
+                if($result) return true;
+                return false;
             } catch(PDOException $e) {
                 return $error = [
                     "error"=> ["text"=>$e->getMessage()]

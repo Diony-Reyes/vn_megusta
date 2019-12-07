@@ -33,15 +33,32 @@
                 ];
             }
         }
-        
+
         public function get_card($card_id) {
-            $this->db->select('*');
-            $this->db->from('vn_patient_cards');
-            $this->db->where('id', $card_id);
-            $query = $this->db->get();	
-            $result = $query->row();
-            return $result;
+            $connect = $this->connectorDB();
+            $sql = "SELECT * FROM vn_patient_cards WHERE id = {$card_id} LIMIT 1";
+
+            try {
+                $result = $connect->query($sql);
+
+                if($result->rowCount() > 0) {
+                    return $result->fetch(PDO::FETCH_LAZY);
+                }
+            } catch(PDOException $e) {
+                return $error = [
+                    "error"=> ["text"=>$e->getMessage()]
+                ];
+            }
         }
+        
+        // public function get_card($card_id) {
+        //     $this->db->select('*');
+        //     $this->db->from('vn_patient_cards');
+        //     $this->db->where('id', $card_id);
+        //     $query = $this->db->get();	
+        //     $result = $query->row();
+        //     return $result;
+        // }
 
         public function get_preferred($patient_id) {
             $connect = $this->connectorDB();

@@ -25,4 +25,16 @@
 
         return $response->write($result);
     });
+
+    // delete card
+    $app->delete("/delete_card/{patient_id}/{card_id}", function(Request $request, Response $response, $arg) {
+        $webservice = new Webservice();
+
+        $patient_id = $arg['patient_id'];
+        $card_id = $arg['card_id'];
+
+        $result = $webservice->vc_delete_card($patient_id, $card_id);
+
+        return $response->write($result);
+    })
 ?>
