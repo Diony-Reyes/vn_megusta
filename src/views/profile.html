@@ -1,0 +1,302 @@
+<?php 
+    $showForm = true;
+    $hasError = false;
+    // print_r($_GET);
+    
+    $info = explode('::', $_GET['req_merchant_defined_data28']);
+    
+    if($_GET) {
+        if( isset($_GET['req_merchant_defined_data1'])) {
+            $showForm = false;
+          
+            if ($_GET['decision'] != 'ACCEPT') {
+              
+                $showForm = true;
+                $hasError = true;
+               
+            }
+        }
+    }
+
+    $cards = $list_cards;
+?>
+
+<div style="color:red">
+    <?php 
+        if($hasError){
+            echo $_GET['message']."<br><br>";
+        } 
+    ?>
+</div>
+
+<!-- TO-DO: Según el código de error, crear un mensaje -->
+<?php if($is_valid_hash): ?>
+<?php if(!$appointment_info->appispaid || $has_orders): ?>
+<?php  if(empty($list_cards)): ?>
+
+<?php if($showForm): ?>
+<div id="containerForm">
+    <div class="messageInfo">
+        <?php if($doctor_is_creating_token): ?>
+        <b>Agregue su método de pago para pagar su membresía de manera recurrente y automática. El costo es de
+            <?=$amount?> pesos mensuales.</b>
+        <br>
+        <?php endif; ?>
+
+        <?php if(empty($list_cards) && $createAndSale): ?>
+        <b>Debe registrar una tarjeta para poder efectuar tus pagos. Esta tarjeta se utilizara para futuros pagos.
+            <span>Monto: RD$</span>
+            <?=$amount?>.
+                <span>Doctor:</span>
+                <?=$appointment_info->doctor_firstname.' '.$appointment_info->doctor_lastname?>
+        </b>
+
+        <?php endif; ?>
+    </div>
+    <br>
+
+    <div class="title">Agregar método de pago</div>
+
+    <form action="https://secureacceptance.cybersource.com/silent/pay" method="post" id="form_add_card">
+        <!-- <form action="https://testsecureacceptance.cybersource.com/silent/pay" method="post" id="form_add_card"> -->
+
+        <div class="inputElements">
+            <label for="card_type">Tipo de tarjeta</label>
+            <select class="modal-input" name="card_type" id="card_type" value="001">
+                <option data-placeholder="true"></option>
+                <option value="001">Visa</option>
+                <option value="002">MasterCard</option>
+            </select>
+        </div>
+
+        <div class="inputElements">
+            <label for="number">Número de tarjeta</label>
+            <input class="modal-input" type="text" name="card_number" id="number" placeholder="Numero de tarjeta" data-mask='0000000000000000'
+            />
+        </div>
+        <div class="inputElements">
+            <label for="number">CVN</label>
+            <input class="modal-input" type="text" name="card_cvn" id="number_" placeholder="CVN" data-mask='000' />
+        </div>
+
+        <div class="inputElements">
+            <label for="date">Fecha de vencimiento</label>
+            <input class="modal-input" type="text" name="card_expiry_date" id="date" placeholder="MM/AAAA" data-mask="00-0000" />
+        </div>
+
+        <?php echo $vn_fields; ?>
+
+        <button type="submit" id="submit" value="Confirm" class="btn btn-primary add-button-modal">Agregar</button>
+        <div class="btn close--modal" data-dismiss="modal" aria-label="Close">Cerrar</div>
+    </form>
+
+    <div class="termsConditions">
+        <input type="checkbox" name="" id="terms"> Aceptar
+        <a href="http://www.buscamed.do/General/terms" target="_blank" rel="noopener noreferrer">&nbsp;Términos y Condiciones</a>
+    </div>
+
+    <?php echo  $vn_append; ?>
+</div>
+<?php else: ?>
+<!-- req_merchant_defined_data2, req_transaction_type -->
+<?php if($info[1] == 'doctor'): ?>
+<div id="greenContainer" style="height: 800px;">
+    <div id="paymentSuccess">
+        <div class="checked"></div> Suscripción inscrita con éxito
+    </div>
+
+    <div class="notes" style="margin-top: 0; display: flex; justify-content: center; align-items: center;">
+        Mensualidad
+    </div>
+
+    <div id="amount"> RD$
+        <?=$_GET['req_amount']?>
+    </div>
+
+    <div class="notes">
+        Fecha de primer cobro:
+        <?= Date('d-m-Y', strtotime($_GET['req_recurring_start_date']))?>
+    </div>
+
+    <div class="notes">
+        No. de Autorización
+        <?php print_r($_GET['auth_code']); ?>
+    </div>
+
+    <div class="notes">
+        ID Transacción
+        <?php print_r($_GET['transaction_id']); ?>
+    </div>
+
+    <div class="btn close--modal" data-dismiss="modal" aria-label="Close" style="margin-top: 5%;">Terminar</div>
+</div>
+<?php elseif($info[1] == 'patient'): ?>
+<div id="greenContainer" style="height: 750px;">
+    <div id="paymentSuccess" style="font-size: 30px;">
+        <div class="checked"></div> Tarjeta agregada con éxito
+    </div>
+
+    <div class="btn close--modal" data-dismiss="modal" aria-label="Close" style="height: 65px;">Terminar</div>
+</div>
+<?php endif; ?>
+<?php endif; ?>
+<?php else: ?>
+<?php if($showForm): ?>
+<div id="makePayment">
+    <form action="https://secureacceptance.cybersource.com/silent/pay" method="post" id="form_pay_app">
+        <!-- <form action="https://testsecureacceptance.cybersource.com/silent/pay" method="post" id="form_pay_app"> -->
+        <div id="greenArea">
+            <div class="title">Realizar Pago</div>
+
+            <div class="amount">
+                <sup>RD$</sup>
+                <?=$amount?>
+            </div>
+
+            <div class="doctor">
+                <?=$appointment_info->doctor_firstname.' '.$appointment_info->doctor_lastname?>
+            </div>
+        </div>
+
+        <div id="centerArea">
+            <div class="date">
+                <span>Fecha y hora:</span>
+
+                <div class="values">
+                    <?php 
+                                        // $date = split(" ", date('Y-m-d h:i:s'));
+                                        // echo $date[0].' '.$date[1];
+                                    ?>
+                </div>
+            </div>
+
+            <div class="card">
+                <span>Método de pago:</span>
+
+                <div class="values">
+                    <?php 
+                                        $hash = split("x", $list_cards->card_hash);
+                                        echo "xxxxxxxxxxxx ".$hash[12];
+                                    ?>
+                </div>
+            </div>
+        </div>
+
+        <div id="bottomArea">
+            <?php echo $vn_fields; ?>
+            <button type="submit" id="submit" value="Confirm" class="btn btn-primary add-button-modal">Continuar</button>
+    </form>
+    <div class="btn close--modal" data-dismiss="modal" aria-label="Close">Cerrar</div>
+    </div>
+    <?php echo  $vn_append; ?>
+</div>
+<? else: ?>
+    <?php if($_GET['req_transaction_type'] == 'sale'): ?>
+    <div id="subscriptionSuccess">
+        <div style='text-align: center'>
+            <div style='text-align: center'>
+                <div>
+                    Gracias por pagar.
+                </div>
+                <div>
+                    <span>Monto: RD$</span>
+                    <?=$amount?>
+                </div>
+                <div>
+                    No. Autorización:
+                    <?php print_r($_GET['auth_code']); ?>
+                </div>
+                <div>
+                    Doctor:
+                    <?=$appointment_info->doctor_firstname.' '.$appointment_info->doctor_lastname?>
+                </div>
+                <div>
+                    ID Transacción:
+                    <?php print_r($_GET['transaction_id']); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php elseif($_GET['req_transaction_type'] == 'create_payment_token,sale'): ?>
+    <div id="subscriptionSuccess">
+        <div style='text-align: center'>
+            Pago realizado con éxito.
+            <div>
+                Tarjeta guardada.
+            </div>
+        </div>
+        <?php endif; ?>
+        <? endif; ?>
+            <?php endif; ?>
+            <?php else: ?>
+            <?php if($_GET['req_transaction_type'] == 'sale'): ?>
+            <div id="greenContainer" style="height: 630px;">
+                <div id="paymentSuccess">
+                    <div class="checked"></div> Pago realizado con éxito
+                </div>
+
+                <div id="amount"> RD$
+                    <?=$amount?>
+                </div>
+
+                <div class="notes">
+                    No. de Autorización
+                    <?php print_r($_GET['auth_code']); ?>
+                </div>
+
+                <div class="notes">
+                    Doctor
+                    <?=$appointment_info->doctor_firstname.' '.$appointment_info->doctor_lastname?>
+                </div>
+
+                <div class="notes">
+                    ID Transacción
+                    <?php print_r($_GET['transaction_id']); ?>
+                </div>
+
+                <div class="btn close--modal" data-dismiss="modal" aria-label="Close">Terminar</div>
+            </div>
+            <?php elseif($_GET['req_transaction_type'] == 'create_payment_token,sale'): ?>
+            <div id="greenContainer">
+                <div id="paymentSuccess">
+                    <div class="checked"></div> Pago realizado con éxito
+                </div>
+
+                <div class="notes" style="margin-top: 0;">
+                    Tarjeta Agregada
+                </div>
+
+                <div id="amount"> RD$
+                    <?=$amount?>
+                </div>
+
+                <div class="notes">
+                    No. de Autorización
+                    <?php print_r($_GET['auth_code']); ?>
+                </div>
+
+                <div class="notes">
+                    Doctor
+                    <?=$appointment_info->doctor_firstname.' '.$appointment_info->doctor_lastname?>
+                </div>
+
+                <div class="notes">
+                    ID Transacción
+                    <?php print_r($_GET['transaction_id']); ?>
+                </div>
+
+                <div class="btn close--modal" data-dismiss="modal" aria-label="Close" style="margin-top: 5%;">Terminar</div>
+            </div>
+            <?php endif; ?>
+            <?php endif; ?>
+            <?php else: ?> Link Invalido!
+            <?php endif; ?>
+
+            <div id="loader"></div>
+            <div class="dots-container" style="display: none">
+                <div class="dots">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>

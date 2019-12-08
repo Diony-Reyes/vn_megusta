@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+
+
+    <link rel="stylesheet" href="https://buscamed.do/assets/css/bootstrap.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="https://buscamed.do/assets/new_css/slimselect.css">
+    <link rel="stylesheet" href="https://buscamed.do/assets/css/select2.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="https://buscamed.do/assets/css/AdminLTE.min.css">
+
+    <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/general.css">
+    <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/tablet.css" />
+    <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/movile.css" />
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:400,500,700">
+</head>
+
+
+
+<div style="color:red">
+
+    {{gett.message}}
+
+    <br>
+    <br>
+</div>
+
+
+
+
+<div id="containerForm">
+    <div class="messageInfo">
+
+        <b>Agregue su método de pago para pagar su membresía de manera recurrente y automática. El costo es de
+            <?=amount?> pesos mensuales.</b>
+        <br>
+
+
+
+        <b>Debe registrar una tarjeta para poder efectuar tus pagos. Esta tarjeta se utilizara para futuros pagos.
+            <span>Monto: RD</span>
+            <?=amount?>.
+                <span>Doctor:</span>
+                <?=appointment_info->doctor_firstname.' '.appointment_info->doctor_lastname?>
+        </b>
+
+
+    </div>
+    <br>
+
+    <div class="title">Agregar método de pago</div>
+
+    {#  <form action="https://secureacceptance.cybersource.com/silent/pay" method="post" id="form_add_card"> #}
+        <form action="https://testsecureacceptance.cybersource.com/silent/pay" method="post" id="form_add_card">
+
+            <div class="inputElements">
+                <label for="card_type">Tipo de tarjeta</label>
+                <select class="modal-input" name="card_type" id="card_type" value="001">
+                    <option data-placeholder="true"></option>
+                    <option value="001">Visa</option>
+                    <option value="002">MasterCard</option>
+                </select>
+            </div>
+
+            <div class="inputElements">
+                <label for="number">Número de tarjeta</label>
+                <input class="modal-input" type="text" name="card_number" id="number" placeholder="Numero de tarjeta" data-mask='0000000000000000'
+                />
+            </div>
+            <div class="inputElements">
+                <label for="number">CVN</label>
+                <input class="modal-input" type="text" name="card_cvn" id="number_" placeholder="CVN" data-mask='000' />
+            </div>
+
+            <div class="inputElements">
+                <label for="date">Fecha de vencimiento</label>
+                <input class="modal-input" type="text" name="card_expiry_date" id="date" placeholder="MM/AAAA" data-mask="00-0000" />
+            </div>
+
+            {{data.vn_fields | raw }}
+
+            <button type="submit" id="submit" value="Confirm" class="btn btn-primary add-button-modal">Agregar</button>
+            <div class="btn close--modal" data-dismiss="modal" aria-label="Close">Cerrar</div>
+        </form>
+
+        <div class="termsConditions">
+            <input type="checkbox" name="" id="terms"> Aceptar
+            <a href="http://www.buscamed.do/General/terms" target="_blank" rel="noopener noreferrer">&nbsp;Términos y Condiciones</a>
+        </div>
+
+        {{ data.vn_append | raw}}
+</div>
+
+
+
+<script src="https://buscamed.do/assets/js/jquery-1.9.1.min.js"></script>
+<script src="https://buscamed.do/assets/js/bootstrap.min.js"></script>
+<script src="https://buscamed.do/assets/new_js/slimselect.js"></script>
+<script src="https://buscamed.do/assets/js/masking.js"></script>
+<script src="https://buscamed.do/_buscamedv/assets/plugins/fullcalendar/lib/moment.min.js"></script>
+<script src="https://buscamed.do/_buscamedv/assets/plugins/fullcalendar/lib/es-do.js"></script>
+<script src="https://buscamed.do/assets/js/payment_modal.js"></script>

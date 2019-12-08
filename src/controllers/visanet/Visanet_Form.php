@@ -248,27 +248,27 @@ trait Visanet_Form {
             $tokenizada = 'TOKENIZACION NO';
         }
         // item_#_tax_amount
-//             <input type="hidden" name="customer_ip_address" value=" @$_SERVER['REMOTE_ADDR'] ">
-//             <input type="hidden" name="item_0_unit_price" value="10.00" />
-//             <input type="hidden" name="item_0_quantity" value="100" />
+            //             <input type="hidden" name="customer_ip_address" value=" @$_SERVER['REMOTE_ADDR'] ">
+            //             <input type="hidden" name="item_0_unit_price" value="10.00" />
+            //             <input type="hidden" name="item_0_quantity" value="100" />
 
-//             <input type="hidden" name="line_item_count" value="2" />
-//    1        <input type="hidden" name="item_0_sku" value="sku001" />
-//             <input type="hidden" name="item_0_code" value="KFLTFDIV" />
-//             <input type="hidden" name="item_0_name" value="KFLTFDIV" />
-//             <input type="hidden" name="item_0_quantity" value="100" />
-//             <input type="hidden" name="item_0_unit_price" value="5.72" />
-        
-//             <input type="hidden" name="item_0_sku" value="sku002" />
-//             <input type="hidden" name="item_0_code" value="KFLTFD70" />
-//             <input type="hidden" name="item_0_name" value="KFLTFD70" />
+            //             <input type="hidden" name="line_item_count" value="2" />
+            //    1        <input type="hidden" name="item_0_sku" value="sku001" />
+            //             <input type="hidden" name="item_0_code" value="KFLTFDIV" />
+            //             <input type="hidden" name="item_0_name" value="KFLTFDIV" />
+            //             <input type="hidden" name="item_0_quantity" value="100" />
+            //             <input type="hidden" name="item_0_unit_price" value="5.72" />
+                    
+            //             <input type="hidden" name="item_0_sku" value="sku002" />
+            //             <input type="hidden" name="item_0_code" value="KFLTFD70" />
+            //             <input type="hidden" name="item_0_name" value="KFLTFD70" />
 
-// i. Nombre de ítem o servicio vendido item_0_name
-// j. 1KU de ítem (identificador del producto) item_0_sku
-// k. Precio unitario del producto item_0_unit_price
-// l. Impuesto (si maneja impuestos por ítem) item_0_tax_amount
-// m. Cantidad del producto item_0_quantity
-// n. Ip del comprador     customer_ip_address
+            // i. Nombre de ítem o servicio vendido item_0_name
+            // j. 1KU de ítem (identificador del producto) item_0_sku
+            // k. Precio unitario del producto item_0_unit_price
+            // l. Impuesto (si maneja impuestos por ítem) item_0_tax_amount
+            // m. Cantidad del producto item_0_quantity
+            // n. Ip del comprador     customer_ip_address
 
 
         $fields =  [
