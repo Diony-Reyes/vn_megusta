@@ -1,5 +1,5 @@
 <?php 
-    class db {
+    trait db {
         private $dbHost = "localhost";
         private $dbUser = "root";
         private $dbPassword = false;
@@ -13,6 +13,11 @@
             $dbConnection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
             return $dbConnection;
+        }
+
+        // connector 
+        private function connectorDB() {
+            return $this->connectionDB();
         }
     }
 ?>

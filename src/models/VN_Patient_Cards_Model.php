@@ -1,13 +1,5 @@
 <?php
-    require __DIR__ .'/../database/db.php';
-
     trait VN_Patient_Cards_Model {
-        // connector 
-        private function connectorDB() {
-            $db = new db();
-            return $db->connectionDB();
-        }
-        
         public function add_card($data){
             if ($this->db->insert("vn_patient_cards", $data)){
                 return $this->db->insert_id();

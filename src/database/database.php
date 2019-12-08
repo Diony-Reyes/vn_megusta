@@ -5,7 +5,7 @@
     {
         // connector 
         private static function connectorDB() {
-            $db = new db();
+            $db = new Webservice();
             return $db->connectionDB();
         }
 
