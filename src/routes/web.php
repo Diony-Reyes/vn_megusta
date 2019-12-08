@@ -25,11 +25,14 @@
         return $view;
     };
 
+ 
     $app->get("/vn_catch_payment", function(Request $request, Response $response, $arg) {
         echo "IM IN THE MATRIX";
         print_r($_REQUEST);die();
         return $response->write($result);
     });
+
+
     // Render Twig template in route
     $app->get('/card-manager', function ($request, $response, $args) {
 
