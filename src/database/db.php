@@ -1,9 +1,9 @@
 <?php 
     trait db {
-        private $dbHost = "localhost";
-        private $dbUser = "root";
-        private $dbPassword = false;
-        private $dbName = "buscamed";
+        private $dbHost = "10.0.0.80";
+        private $dbUser = "josue";
+        private $dbPassword = "Admintec001";
+        private $dbName = "megusta_site";
 
         // connection
         public function connectionDB() {
