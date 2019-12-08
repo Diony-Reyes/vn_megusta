@@ -36,5 +36,26 @@
         $result = $webservice->vc_delete_card($patient_id, $card_id);
 
         return $response->write($result);
+    });
+
+    $app->post("/vc_make_preferred_card/{patient_id}/{card_id}", function(Request $request, Response $response, $arg) {
+        $webservice = new Webservice();
+
+        $patient_id = $arg['patient_id'];
+        $card_id = $arg['card_id'];
+
+        $result = $webservice->vc_make_preferred_card($patient_id, $card_id);
+
+        return $response->write($result);
+    });
+
+    $app->get("/vc_patient_transactions/{patient_id}", function(Request $request, Response $response, $arg) {
+        $webservice = new Webservice();
+
+        $patient_id = $arg['patient_id'];
+
+        $result = $webservice->vc_patient_transactions($patient_id);
+
+        return $response->write($result);
     })
 ?>

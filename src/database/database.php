@@ -68,10 +68,20 @@
             // append the where statement
             $sql .= $whereSQL;
 
+            try {
+                $result = __Database::connectorDB()->query($sql);
 
+                if($result) return true;
+                return false;
+            } catch(PDOException $e) {
+                return $error = [
+                    "error"=> ["text"=>$e->getMessage()]
+                ];
+            }
+            
             // print_r($sql);die();
             // run and return the query result
-            return mysqli_query(__Database::__dbConnection(), $sql);
+            // return mysqli_query(__Database::__dbConnection(), $sql);
 
         }
 

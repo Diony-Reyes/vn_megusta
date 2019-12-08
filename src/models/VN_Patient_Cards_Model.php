@@ -79,16 +79,6 @@
             }
         }
 
-        // public function get_preferred($patient_id) {
-        //     $this->db->select('*');
-        //     $this->db->from('vn_patient_cards');
-        //     $this->db->where('patient_id', $patient_id);
-        //     $this->db->where('preferred','1');
-        //     $query = $this->db->get();	
-        //     $result = $query->row();
-        //     return $result;
-        // }
-
         public function delete_card($patient_id, $card_id) {
             $this->db->where('id', $card_id);
             $this->db->where('patient_id', $patient_id);
@@ -106,5 +96,6 @@
         public function update_massive_preferred_0($patient_id) {
             $this->db->query("UPDATE `vn_patient_cards` SET preferred = 0 WHERE patient_id = {$patient_id}");
         }
+
     }
 ?>

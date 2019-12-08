@@ -73,11 +73,14 @@ trait Visanet_Patient_Card_Manager {
      * @return void
      */
     public function vc_make_preferred_card($patient_id, $card_id) {
-        $this->VN_Patient_Cards_Model->update_massive_preferred_0($patient_id);
-        $this->VN_Patient_Cards_Model->update_card($card_id, [
-            'preferred' => 1
-        ]);
-        return $this->jsonResponse( $this->VN_Patient_Cards_Model->get_cards($patient_id));
+        $whereClausePreferred = " WHERE id = {$card_id} AND patient_id = {$patient_id}";
+        $whereClauseUnpreferred = " WHERE patient_id = {$patient_id}";
+        $data_preferred = ['preferred' => 1];
+        $data_unpreferred = ['preferred' => 0];
+
+        __Database::__update("vn_patient_cards", $data_unpreferred, $whereClauseUnpreferred);
+        __Database::__update("vn_patient_cards", $data_preferred, $whereClausePreferred);
+        return $this->jsonResponse( $this->get_cards($patient_id));
     }
 
     /**
@@ -87,7 +90,7 @@ trait Visanet_Patient_Card_Manager {
      * @return void
      */
     public function vc_patient_transactions($patient_id) {
-        return $this->jsonResponse( $this->VN_Patient_Transactions_Model->get_transactions($patient_id));
+        $this->jsonResponse($this->get_transactions($patient_id));
     }
 
   
