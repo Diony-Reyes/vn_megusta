@@ -36,37 +36,47 @@
     // Render Twig template in route
     $app->get('/card-manager', function ($request, $response, $args) {
 
-        // $_GET
+        $create_token = false;
+        if(isset($_GET['add_card']) && !empty($_GET['add_card'])) {
+            $create_token = true;
+            $cards = [];
+        } else {
+            $cards = ( new Webservice())->get_preferred($patient_id);
 
-        $data = payment_patient(1, false);
+        }
+        $patient_id = 167;
+        // $_GET
+        // print_r($d);die();
+        $data = payment_patient(1, $cards, $create_token);
+ 
         // die();
-    $showForm = true;
-    $hasError = false;
-    $info = "";
-    if (isset($_GET['req_merchant_defined_data28'])) {
-        $info = explode('::', $_GET['req_merchant_defined_data28']);
-    }
-    
-    if($_GET) {
-        if( isset($_GET['req_merchant_defined_data1'])) {
-            $showForm = false;
-          
-            if ($_GET['decision'] != 'ACCEPT') {
-              
-                $showForm = true;
-                $hasError = true;
-               
+        $showForm = true;
+        $hasError = false;
+        $info = "";
+        if (isset($_GET['req_merchant_defined_data28'])) {
+            $info = explode('::', $_GET['req_merchant_defined_data28']);
+        }
+        
+        if($_GET) {
+            if( isset($_GET['req_merchant_defined_data1'])) {
+                $showForm = false;
+            
+                if ($_GET['decision'] != 'ACCEPT') {
+                
+                    $showForm = true;
+                    $hasError = true;
+                
+                }
             }
         }
-    }
-    $list_cards = [];
-    $cards = $list_cards;
+        $list_cards =   $cards;
+        $cards = $list_cards;
 
-
-
+// print_r($list_cards);die();
+        
 
         $args['data']= $data;
-        $args['list_cards']= [];
+        $args['list_cards']=$list_cards;
         $args['showForm']= [];
         $args['hasError']= [];
         $args['cards']= [];
@@ -93,7 +103,7 @@
         ];
     }
 
-    function payment_patient($patient_id, $order=false) {
+    function payment_patient($patient_id, $list_cards, $create_token = false) {
         // $app_info = $this->getappinfo($app_id);            
         // $template['has_orders'] = $this->apphasorders($app_id);
         // print_r($app_info);die();
@@ -117,17 +127,23 @@
         $url = 'https://megusta.do';
         // $url = 'http://'.$_SERVER[HTTP_HOST].'/Webservice/payment_patient/'.$patient_id."/".$app_id."/".$amount;
         // $template['list_cards'] = $this->vn_patient_get_preferred($patient_id);
-        $template['list_cards'] =[];
+        $template['list_cards'] =$list_cards;
    
         $template['appointment_info'] = [];
         
         $template['amount'] = 1000;
-        if(!empty($template['list_cards'])) {
-            
-            $template['vn_fields'] = $this->vn_export_fields($sess_id, $app_info->doctor_id, $patient_id, 'patient', $amount, 'sale', false, $url, $app_id, $template['list_cards']->id, $order);
+        if ($create_token) {
+            $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', '0.00', 'create_payment_token', false, $url, 0, 0);
         } else {
-            $template['createAndSale'] = true;
-            $template['vn_fields'] = vn_export_fields($sess_id, 1, 1, 'patient', 1000, 'create_payment_token,sale', false, $url, 0, 0);
+                if(!empty($list_cards)) {
+                    
+                    // $template['vn_fields'] = $this->vn_export_fields($sess_id, $app_info->doctor_id, $patient_id, 'patient', $amount, 'sale', false, $url, $app_id, $template['list_cards']->id, $order);
+                    $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', 1000, 'sale', false, $url, 0, 0);
+                } else {
+                    $template['createAndSale'] = true;
+                    $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', 1000, 'create_payment_token,sale', false, $url, 0, 0);
+                }
+
         }
 
         $template['vn_append'] = ' <p style="background:url(https://h.online-metrix.net/fp/clear.png?'.$df_param.'&amp;m=1)"></p><img src="https://h.online-metrix.net/fp/clear.png?'.$df_param.'&amp;m=2" width="1" height="1" />';
@@ -155,6 +171,8 @@
         $reference_number = $id.time();
         $currency = 'DOP';
         $payment_method = 'card';
+
+        // print_r($transaction_type);die();
         
         //  `vn_merchant_id` TEXT NULL AFTER `visanet_card_type`, 
         //  `vn_profile_id` TEXT NULL AFTER `vn_merchant_id`, 
@@ -188,6 +206,7 @@
 
         $append_info = get_billing_info_by_type($id, $user_type);
         $payment_token = '';
+        // $payment_token = '5758177340026333504003';
         if ($card_id  != '') {
             $card = $this->VN_Patient_Cards_Model->get_card($card_id);
             $payment_token =  $card->subscription_id;
@@ -286,6 +305,7 @@
         } else {
             $signed .= ',payment_token';
         }
+        // $signed .= ',payment_token';
         $cedula = '40220770107';// commerce identity
         // print_r($data);die();
         $merchant_defined_data2 = 'buscamed.do';

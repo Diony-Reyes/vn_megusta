@@ -3,7 +3,7 @@
 
     trait VN_Patient_Cards_Model {
         // connector 
-        private function connectorDB() {
+        private static function connectorDB() {
             $db = new db();
             return $db->connectionDB();
         }
@@ -15,23 +15,13 @@
             return false;
         }
 
-        public function get_cards($patient_id) {
-            $connect = $this->connectorDB();
+        public static function get_cards($patient_id) {
+            $connect = self::connectorDB();
+
             $sql = "SELECT * FROM vn_patient_cards where patient_id = {$patient_id}";
-
-            try {
-                $result = $connect->query($sql);
-
-                if($result->rowCount() > 0) {
-                    return $cards = $result->fetchAll(PDO::FETCH_OBJ);
-                } else {
-                    return $msg = ["message"=>"El paciente con ID $patient_id no posee tarjetas"];
-                }
-            } catch(PDOException $e) {
-                return $error = [
-                    "error"=> ["text"=>$e->getMessage()]
-                ];
-            }
+            $result = $connect->query($sql);
+return [];
+        //   /  return  $result->fetchAll(PDO::FETCH_OBJ);
         }
         
         public function get_card($card_id) {
@@ -44,7 +34,7 @@
         }
 
         public function get_preferred($patient_id) {
-            $connect = $this->connectorDB();
+            $connect = self::connectorDB();
             $sql = "SELECT * FROM vn_patient_cards WHERE patient_id = {$patient_id} AND preferred = 1";
 
             try {

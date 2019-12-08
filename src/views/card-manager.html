@@ -33,6 +33,50 @@
     <br>
 </div>
 
+{% if  (list_cards | e) %}
+     <div id="makePayment">
+        {# <form action="https://secureacceptance.cybersource.com/silent/pay" method="post" id="form_pay_app"> #}
+         <form action="https://testsecureacceptance.cybersource.com/silent/pay" method="post" id="form_pay_app"> 
+            <div id="greenArea">
+                <div class="title">Realizar Pago</div>
+
+                <div class="amount">
+                    <sup>RD$</sup>1,000
+                </div>
+
+                <div class="doctor">
+                    Megusta.do
+                </div>    
+            </div>
+            
+            <div id="centerArea">
+                <div class="date">
+                    <span>Fecha y hora:</span> 
+
+                    <div class="values">
+                        {{list_cards[0].card_hash}}
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span>Método de pago:</span> 
+
+                    <div class="values">
+                           {{list_cards[0].card_hash}}
+                    </div>
+                </div>
+            </div>
+
+            <div id="bottomArea">
+                 {{data.vn_fields | raw }}
+                <button type="submit" id="submit" value="Confirm" class="btn btn-primary add-button-modal">Continuar</button>
+        </form>
+                <div class="btn close--modal" data-dismiss="modal" aria-label="Close">Cerrar</div>
+            </div>
+        {{ data.vn_append | raw}}
+    </div>
+{% else  %}
+
 
 
 
@@ -99,7 +143,7 @@
         {{ data.vn_append | raw}}
 </div>
 
-
+{% endif %}
 
 <script src="https://buscamed.do/assets/js/jquery-1.9.1.min.js"></script>
 <script src="https://buscamed.do/assets/js/bootstrap.min.js"></script>

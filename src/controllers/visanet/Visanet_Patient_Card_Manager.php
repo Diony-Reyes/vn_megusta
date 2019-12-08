@@ -21,6 +21,10 @@ trait Visanet_Patient_Card_Manager {
         $result = $this->get_cards($patient_id);
         $this->jsonResponse($result);
     }
+    public function vn_patient_cards_fn($patient_id) {
+        $result = $this->get_cards($patient_id);
+        return $result;
+    }
 
     /**
      * List patient cards

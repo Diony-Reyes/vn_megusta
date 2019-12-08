@@ -17,8 +17,8 @@
             $this->db->select('*');
             $this->db->from('vn_patient_cards');
             $this->db->where('patient_id', $patient_id);
-            $query = $this->db->get();	
-            return $query->result();
+            // $query = $this->db->get();	
+            // return $query->result();
         }
         
         public function get_card($card_id) {

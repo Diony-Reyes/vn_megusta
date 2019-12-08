@@ -1,9 +1,9 @@
 <?php 
     class db {
         private $dbHost = "localhost";
-        private $dbUser = "root";
-        private $dbPassword = false;
-        private $dbName = "buscamed";
+        private $dbUser = "josue";
+        private $dbPassword = 'Admintec001';
+        private $dbName = "megusta_site";
 
         // connection
         public function connectionDB() {
