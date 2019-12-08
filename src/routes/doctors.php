@@ -4,7 +4,7 @@
 
     require __DIR__.'/../models/Doctors_Model.php';
     
-    $app = new Slim\App();
+    // $app = new Slim\App();
     
     // GET doctor by id
     $app->get("/doctor/{id}", function(Request $request, Response $response, $arg) {

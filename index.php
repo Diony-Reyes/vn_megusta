@@ -16,9 +16,28 @@
         'debug' => true
     ]];
 
+    // $config = ['settings' => [
+    //     'addContentLengthHeader' => true,
+    //     'displayErrorDetails' => true,
+    //     'debug' => true
+    // ]];
+
     $app = new Slim\App($config);
     $container = $app->getContainer();
     
+
+    $container['view'] = function ($container) {
+        $view = new \Slim\Views\Twig(__DIR__.'/src/views', [
+            // 'cache' => __DIR__.'/../cache' 
+        ]);
+
+        // Instantiate and add Slim specific extension
+        $router = $container->get('router');
+        $uri = \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));
+        $view->addExtension(new \Slim\Views\TwigExtension($router, $uri));
+
+        return $view;
+    };
     // // Register component on container
     // $container['view'] = function ($container) {
     //     $view = new \Slim\Views\Twig('src/views', [

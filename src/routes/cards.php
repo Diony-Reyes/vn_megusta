@@ -4,7 +4,7 @@
 
     require __DIR__.'/../controllers/webservice.php';
 
-    $app = new Slim\App();
+    // $app = new Slim\App();
     
     // get patient cards
     $app->get("/get_patient_cards/{id}", function(Request $request, Response $response, $arg) {

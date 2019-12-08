@@ -2,28 +2,11 @@
     use Psr\Http\Message\ResponseInterface as Response;
     use Psr\Http\Message\ServerRequestInterface as Request;
    
-   
-    $config = ['settings' => [
-        'addContentLengthHeader' => true,
-        'displayErrorDetails' => true,
-        'debug' => true
-    ]];
-
-    $app = new Slim\App($config);
-    $container = $app->getContainer();
  
-    $container['view'] = function ($container) {
-        $view = new \Slim\Views\Twig(__DIR__.'/../views', [
-            // 'cache' => __DIR__.'/../cache' 
-        ]);
 
-        // Instantiate and add Slim specific extension
-        $router = $container->get('router');
-        $uri = \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));
-        $view->addExtension(new \Slim\Views\TwigExtension($router, $uri));
+    // $app = new Slim\App($config);
+    // $container = $app->getContainer();
 
-        return $view;
-    };
 
  
     $app->get("/vn_catch_payment", function(Request $request, Response $response, $arg) {
