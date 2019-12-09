@@ -268,13 +268,13 @@
             ];
         } else { // patient
             $user = ( new Webservice())->get_client_info($id);
-
+            
             $data = [
-                'bill_to_forename' => ucfirst(strtolower($user->patient_firstname)),
-                'bill_to_surname' => ucfirst(strtolower($user->patient_lastname)),
+                'bill_to_forename' => ucfirst(strtolower($user->firstName)),
+                'bill_to_surname' => ucfirst(strtolower($user->lastName)),
                 'bill_to_email' => $user->email,
                 'bill_to_phone' => $user->phone,
-                'bill_to_address_line1' => substr($user->address, 0, 40),
+                'bill_to_address_line1' => 'C/ Paseo de Los Locutores, #45',
                 'bill_to_address_city' => 'Santo Domingo',
                 'bill_to_address_state' => 'SD',
                 'bill_to_address_country' => 'DO',
