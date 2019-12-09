@@ -18,7 +18,7 @@ trait Visanet {
     use Visanet_Card_Manager;
 
     private function gateway($doctor_id = null, $buscamed = false) {
-        $doctor = $this->Doctor_Model->get_doctor_data($doctor_id);
+        $doctor = $this->get_doctor_data($doctor_id);
         //  `vn_merchant_id` TEXT NULL AFTER `visanet_card_type`, 
         //  `vn_profile_id` TEXT NULL AFTER `vn_merchant_id`, 
         //  `vn_access_key` TEXT NULL AFTER `vn_profile_id`, 
@@ -29,11 +29,11 @@ trait Visanet {
         $username = '';
         $password = '';
         if ($buscamed) {
-            $c = CyberSource\CyberSource::factory( $this->vault()->merchant_id, $this->vault()->transaction_key, CyberSource\CyberSource::ENV_LIVE);
-            // $c = CyberSource\CyberSource::factory( $this->vault()->merchant_id, $this->vault()->transaction_key, CyberSource\CyberSource::ENV_TEST);
+            // $c = CyberSource\CyberSource::factory( $this->vault()->merchant_id, $this->vault()->transaction_key, CyberSource\CyberSource::ENV_LIVE);
+            $c = CyberSource\CyberSource::factory( $this->vault()->merchant_id, $this->vault()->transaction_key, CyberSource\CyberSource::ENV_TEST);
         } else {
-            $c = CyberSource\CyberSource::factory( $doctor->vn_merchant_id, $doctor->vn_soap_key, CyberSource\CyberSource::ENV_LIVE);
-            // $c = CyberSource\CyberSource::factory( $doctor->vn_merchant_id, $doctor->vn_soap_key, CyberSource\CyberSource::ENV_TEST);
+            // $c = CyberSource\CyberSource::factory( $doctor->vn_merchant_id, $doctor->vn_soap_key, CyberSource\CyberSource::ENV_LIVE);
+            $c = CyberSource\CyberSource::factory( $doctor->vn_merchant_id, $doctor->vn_soap_key, CyberSource\CyberSource::ENV_TEST);
         }
         $c->default_currency = 'DOP';
         return $c;

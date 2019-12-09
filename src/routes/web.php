@@ -2,28 +2,11 @@
     use Psr\Http\Message\ResponseInterface as Response;
     use Psr\Http\Message\ServerRequestInterface as Request;
    
-   
-    $config = ['settings' => [
-        'addContentLengthHeader' => true,
-        'displayErrorDetails' => true,
-        'debug' => true
-    ]];
-
-    $app = new Slim\App($config);
-    $container = $app->getContainer();
  
-    $container['view'] = function ($container) {
-        $view = new \Slim\Views\Twig(__DIR__.'/../views', [
-            // 'cache' => __DIR__.'/../cache' 
-        ]);
 
-        // Instantiate and add Slim specific extension
-        $router = $container->get('router');
-        $uri = \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));
-        $view->addExtension(new \Slim\Views\TwigExtension($router, $uri));
+    // $app = new Slim\App($config);
+    // $container = $app->getContainer();
 
-        return $view;
-    };
 
  
     $app->get("/vn_catch_payment", function(Request $request, Response $response, $arg) {
@@ -31,11 +14,16 @@
         print_r($_REQUEST);die();
         return $response->write($result);
     });
+    $app->post("/vncallback", function(Request $request, Response $response, $arg) {
+        echo "IM IN THE MATRIX BUT INNN";
+        print_r($_REQUEST);die();
+        return $response->write($result);
+    });
 
 
     // Render Twig template in route
     $app->get('/card-manager', function ($request, $response, $args) {
-
+        $patient_id = 167;
         $create_token = false;
         if(isset($_GET['add_card']) && !empty($_GET['add_card'])) {
             $create_token = true;
@@ -44,7 +32,7 @@
             $cards = ( new Webservice())->get_preferred($patient_id);
 
         }
-        $patient_id = 167;
+ 
         // $_GET
         // print_r($d);die();
         $data = payment_patient(1, $cards, $create_token);
@@ -83,23 +71,26 @@
         $args['gett'] = $_GET;
         $args['is_valid_hash'] = true;
         
-        // print_r($data);die();
         return $this->view->render($response, 'card-manager.html', $args);
+    })->setName('profile');
+
+    $app->get("/vn_client/{patient_id}", function(Request $request, Response $response, $arg) {
+        return $this->view->render($response, 'client-card-manager.html', $arg);
     })->setName('profile');
 
     function visanet_vars() {
         return (object)[
-                'version' => '0.1',
-                'name' => 'Visanet e-commerce',
-                'org_dev'=> '1snn5n9w',
-                'org_live'=> 'k8vif92e',
-                'secret_key' => '7bf10c540f08438e8ec4f9e3d2959c8a9af5cb18e69c474c85be66a4fc4be4bb713257dd94c64f66b3e7a93401a719d6908bd73dc3cc45e1a2a97b36978c4244cfc05243c3424b529b326dedb6c5ecc192fae525d24143529907928d17fe1e836dddfde958dc47e889da876608861dafb89cef95133146fe87dec264283d605a',
-                'access_key'=> '8456a8f5ecb83ba4a25ec239d6ae0a71',
-                'profile_id'=> '47EC6C53-9B6F-47AA-89AA-70CE446D13AD',
-                'transaction_uuid'=>  uniqid(),
-                'signed_date_time'=> gmdate("Y-m-d\TH:i:s\Z"),
-                'merchant_id' => 'visanetdr_000000430807001',
-                'transaction_key' => '/QPGAXqTWDmA633HMdjImXLShlw9epYy0O6cS8MBXOlNwK8rOKBJy26cRT7Bk09euVTMS1r+mAQVznGOMXEzzugEIA8z+DhJ/fw4co7wNnFf1y03iYTgT6gfo9D+072lf2oALc1rmztg65t747QXTPZpbMkCplh9ZODo+4YCDIFifPQIe1XRBjOarhwAGHUIFSfdM33zFlciXrshxUyvesfAg0Twxx/B0RUSjuJ2jOS4nxyq4hDPU9UC7wSwoJMB3tQNOaUUWkQkdKm+/IdCwCZgSkFcyGVNhySwyHqXh/oIm/mz1ud2KrZ29/l9PlOg3GglO/UceZMcdxXekjfe5w==',
+            'version' => '0.1',
+            'name' => 'Visanet e-commerce',
+            'org_dev'=> '1snn5n9w',
+            'org_live'=> 'k8vif92e',
+            'secret_key' => 'a2f5de821ca849418cc151b5ee43fbddb1642ebd7c9c4bb2909452f5614aedaafa74a1b7abdd49ec824b22f1ce16aa5d4c6a5faa90254c479dd582dd62bc3d30a6e59f0351d949dc9eb05dcbee3e9dcb734884e2fc734a7787157e1306057f3bc8b31d267e5346139562ca503510faefbc5dea5ae11d48e598c891279772120e',
+            'access_key'=> 'c542e1a45b0c33fc991190fd22d5fd79',
+            'profile_id'=> 'B0397FE6-D1B7-4C00-BBE1-CAA86EA92566',
+            'transaction_uuid'=>  uniqid(),
+            'signed_date_time'=> gmdate("Y-m-d\TH:i:s\Z"),
+            'merchant_id' => 'visanetdr_000000431651001',
+            'transaction_key' => 'Xkj7wkZGeSQ2Dty1laqgk6xia9VLmM+jH1zv3z+TS6hSBB9B9vhwXGNdi5lCm+Ha5gMakj3FbzJl4RpZQFfI8l0kleXaYX+OUcIEloD2nzERkKS57uJR39Nky6OMhAmmLg4/w7N4ntOafTt3Aksrz7pcMVvCz+9v8jZ/K7MitC+2EGaT7ScL0TWDQ/k2Lc1nSxfZlxE2H2xWK1dYtYbMXKA2SwbkHl3IZp0Xxplz3oIczO+OiwRUasYKcW0RBDDPDmWasmXoLe6QKWwQTM9xCiDqnkSTG5tXXjNx9MwQZ0RfG1JlYlXjmgC2JRkPTSiWwvzusVUiUsp3yNC/6nFLkA==',
         ];
     }
 
@@ -153,7 +144,7 @@
     }
 
 
-       /**
+    /**
      * Undocumented function
      * SE AGREGO DOCTORID COMO PRIMER PARAMETRO
      * @param [type] $id
@@ -162,8 +153,8 @@
      * @param [type] $transaction_type: create_payment_token|authorization|sale
      * @param [type] $is_recurring: set up recurrency, When is recurring, the amount field is the recurrent amount
      * @return void
-     */
-     function vn_export_fields($sess_id = null, $doctor_id = null, $id, $user_type, $amount,$transaction_type, $is_recurring = false, $url_return_web, $appointment_id = '', $card_id = '', $order='') {
+    */
+    function vn_export_fields($sess_id = null, $doctor_id = null, $id, $user_type, $amount,$transaction_type, $is_recurring = false, $url_return_web, $appointment_id = '', $card_id = '', $order='') {
         /**
          *  @TODO: create user validation
          */
@@ -188,31 +179,29 @@
         $signed_date_time = visanet_vars()->signed_date_time;
         $secret_key  = visanet_vars()->secret_key;
         $doctor = [];
-    //    if ($doctor_id) {
-    //         $doctor = (object)[];//$this->Doctor_Model->get_doctor_data($doctor_id);
-    //         $access_key = $doctor->vn_access_key;
-    //         $profile_id = $doctor->vn_profile_id;
-    //         $transaction_uuid = $transaction_uuid;
-    //         $signed_date_time = $signed_date_time;
-    //         $secret_key  = $doctor->vn_secret_key;
+        //    if ($doctor_id) {
+        //         $doctor = (object)[];//$this->Doctor_Model->get_doctor_data($doctor_id);
+        //         $access_key = $doctor->vn_access_key;
+        //         $profile_id = $doctor->vn_profile_id;
+        //         $transaction_uuid = $transaction_uuid;
+        //         $signed_date_time = $signed_date_time;
+        //         $secret_key  = $doctor->vn_secret_key;
 
-    //         // print_r($doctor);die();
-    //     } else {
-    //         if ($user_type == 'doctor') {
-    //             $doctor = $this->Doctor_Model->get_doctor_data($id);
-    //         }
-    //     }
+        //         // print_r($doctor);die();
+        //     } else {
+        //         if ($user_type == 'doctor') {
+        //             $doctor = $this->Doctor_Model->get_doctor_data($id);
+        //         }
+        //     }
 
 
         $append_info = get_billing_info_by_type($id, $user_type);
         $payment_token = '';
-        // $payment_token = '5758177340026333504003';
+        $payment_token = '5758177340026333504003';
         if ($card_id  != '') {
             $card = $this->VN_Patient_Cards_Model->get_card($card_id);
             $payment_token =  $card->subscription_id;
         }
-
-
 
         // This can be injected via POST
         $form = vn_form_factory(array_merge([
@@ -240,26 +229,28 @@
     }
 
 
-     function buildDataToSign($params) {
+    function buildDataToSign($params) {
         $signedFieldNames = explode(",",$params["signed_field_names"]);
+
         foreach ($signedFieldNames as $field) {
            $dataToSign[] = $field . "=" . $params[$field];
         }
+
         return commaSeparate($dataToSign);
-}
+    }
 
- function commaSeparate ($dataToSign) {
-    return implode(",",$dataToSign);
-}
-     function sign ($params, $secretKey) {
+    function commaSeparate ($dataToSign) {
+        return implode(",",$dataToSign);
+    }
+    function sign ($params, $secretKey) {
         return signData(buildDataToSign($params), $secretKey);
-      }
+    }
       
-       function signData($data, $secretKey) {
-          return base64_encode(hash_hmac('sha256', $data, $secretKey, true));
-      }
+    function signData($data, $secretKey) {
+        return base64_encode(hash_hmac('sha256', $data, $secretKey, true));
+    }
 
-     function get_billing_info_by_type($id, $type) {
+    function get_billing_info_by_type($id, $type) {
         if ($type == 'doctor') {
             // $user = $this->webservice_model->getDoctor($id)[0];
             $data = [
@@ -274,7 +265,6 @@
                 'bill_to_address_postal_code' => "",
             ];
         } else { // patient
-           
             // $user = $this->webservice_model->get_patient($id);
 
             $data = [
@@ -300,6 +290,7 @@
         // item_0_tax_amount
         $unsigned = "line_item_count,item_0_name,item_0_sku,item_0_unit_price,item_0_quantity,customer_ip_address,device_fingerprint_id,merchant_defined_data27,merchant_defined_data29,merchant_defined_data30,merchant_defined_data1,merchant_defined_data2,merchant_defined_data3,merchant_defined_data4,merchant_defined_data28";
         $signed = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,payment_method,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code";
+
         if ($data['payment_token'] == '') {
             $unsigned .= ',card_type,card_number,card_expiry_date,card_cvn';
         } else {

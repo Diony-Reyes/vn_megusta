@@ -1,11 +1,11 @@
 <?php
-    require_once 'db.php';
+    // require_once 'db.php';
 
     class __Database
     {
         // connector 
         private static function connectorDB() {
-            $db = new db();
+            $db = new Webservice();
             return $db->connectionDB();
         }
 
@@ -68,10 +68,20 @@
             // append the where statement
             $sql .= $whereSQL;
 
+            try {
+                $result = __Database::connectorDB()->query($sql);
 
+                if($result) return true;
+                return false;
+            } catch(PDOException $e) {
+                return $error = [
+                    "error"=> ["text"=>$e->getMessage()]
+                ];
+            }
+            
             // print_r($sql);die();
             // run and return the query result
-            return mysqli_query(__Database::__dbConnection(), $sql);
+            // return mysqli_query(__Database::__dbConnection(), $sql);
 
         }
 
@@ -94,11 +104,8 @@
             try {
                 $result = __Database::connectorDB()->query($sql);
 
-                if($result) {
-                    return $result;
-                } else {
-                    return $msg = ["message"=>"Error"];
-                }
+                if($result) return true;
+                return false;
             } catch(PDOException $e) {
                 return $error = [
                     "error"=> ["text"=>$e->getMessage()]

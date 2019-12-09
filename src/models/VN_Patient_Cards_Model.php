@@ -1,6 +1,4 @@
 <?php
-    require __DIR__ .'/../database/db.php';
-
     trait VN_Patient_Cards_Model {
         // connector 
         private static function connectorDB() {
@@ -20,18 +18,35 @@
 
             $sql = "SELECT * FROM vn_patient_cards where patient_id = {$patient_id}";
             $result = $connect->query($sql);
-return [];
-        //   /  return  $result->fetchAll(PDO::FETCH_OBJ);
+            // return [];
+          return  $result->fetchAll(PDO::FETCH_OBJ);
+        }
+
+        public function get_card($card_id) {
+            $connect = $this->connectorDB();
+            $sql = "SELECT * FROM vn_patient_cards WHERE id = {$card_id} LIMIT 1";
+
+            try {
+                $result = $connect->query($sql);
+
+                if($result->rowCount() > 0) {
+                    return $result->fetch(PDO::FETCH_LAZY);
+                }
+            } catch(PDOException $e) {
+                return $error = [
+                    "error"=> ["text"=>$e->getMessage()]
+                ];
+            }
         }
         
-        public function get_card($card_id) {
-            $this->db->select('*');
-            $this->db->from('vn_patient_cards');
-            $this->db->where('id', $card_id);
-            $query = $this->db->get();	
-            $result = $query->row();
-            return $result;
-        }
+        // public function get_card($card_id) {
+        //     $this->db->select('*');
+        //     $this->db->from('vn_patient_cards');
+        //     $this->db->where('id', $card_id);
+        //     $query = $this->db->get();	
+        //     $result = $query->row();
+        //     return $result;
+        // }
 
         public function get_preferred($patient_id) {
             $connect = self::connectorDB();
@@ -52,16 +67,6 @@ return [];
             }
         }
 
-        // public function get_preferred($patient_id) {
-        //     $this->db->select('*');
-        //     $this->db->from('vn_patient_cards');
-        //     $this->db->where('patient_id', $patient_id);
-        //     $this->db->where('preferred','1');
-        //     $query = $this->db->get();	
-        //     $result = $query->row();
-        //     return $result;
-        // }
-
         public function delete_card($patient_id, $card_id) {
             $this->db->where('id', $card_id);
             $this->db->where('patient_id', $patient_id);
@@ -79,5 +84,6 @@ return [];
         public function update_massive_preferred_0($patient_id) {
             $this->db->query("UPDATE `vn_patient_cards` SET preferred = 0 WHERE patient_id = {$patient_id}");
         }
+
     }
 ?>
