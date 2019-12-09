@@ -19,7 +19,7 @@
             $sql = "SELECT * FROM vn_patient_cards where patient_id = {$patient_id}";
             $result = $connect->query($sql);
             // return [];
-          return  $result->fetchAll(PDO::FETCH_OBJ);
+            return  $result->fetchAll(PDO::FETCH_OBJ);
         }
 
         public function get_card($card_id) {

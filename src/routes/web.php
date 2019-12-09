@@ -22,20 +22,22 @@
 
 
     // Render Twig template in route
-    $app->get('/card-manager', function ($request, $response, $args) {
-        $patient_id = 167;
+    $app->get('/card-manager/{patient_id}', function ($request, $response, $args) {
+        $patient_id = $args['patient_id'];
+        $count_cards = count(( new Webservice())->get_cards($patient_id));
         $create_token = false;
-        if(isset($_GET['add_card']) && !empty($_GET['add_card'])) {
-            $create_token = true;
+
+        if($count_cards <= 0 || isset($_GET['add_card']) && !empty($_GET['add_card'])) {
             $cards = [];
         } else {
             $cards = ( new Webservice())->get_preferred($patient_id);
-
         }
- 
+
+        if(isset($_GET['add_card']) && !empty($_GET['add_card'])) $create_token = true;
+        
         // $_GET
         // print_r($d);die();
-        $data = payment_patient(1, $cards, $create_token);
+        $data = payment_patient($patient_id, $cards, $create_token);
  
         // die();
         $showForm = true;
@@ -265,14 +267,14 @@
                 'bill_to_address_postal_code' => "",
             ];
         } else { // patient
-            // $user = $this->webservice_model->get_patient($id);
+            $user = ( new Webservice())->get_client_info($id);
 
             $data = [
-                'bill_to_forename' => "Josue",
-                'bill_to_surname' => "Grullon",
-                'bill_to_email' => "josuegrullon@gmail.com",
-                'bill_to_phone' => '8294023393',
-                'bill_to_address_line1' =>"LAs mercedes #20",
+                'bill_to_forename' => ucfirst(strtolower($user->patient_firstname)),
+                'bill_to_surname' => ucfirst(strtolower($user->patient_lastname)),
+                'bill_to_email' => $user->email,
+                'bill_to_phone' => $user->phone,
+                'bill_to_address_line1' => substr($user->address, 0, 40),
                 'bill_to_address_city' => 'Santo Domingo',
                 'bill_to_address_state' => 'SD',
                 'bill_to_address_country' => 'DO',

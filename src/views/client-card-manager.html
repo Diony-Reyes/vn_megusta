@@ -36,6 +36,12 @@
             .delete_pay_method {
                 width: 100%;
             }
+
+            #add_card_modal .modal-dialog-modification {
+                max-width: 100%;
+                width: auto;
+                height: auto;
+            }
         </style>
     </head>
     <body>
@@ -125,6 +131,51 @@
                 </section>
             </section>
         </section>
+
+        <!--modal-->
+        <div
+            class="modal fade"
+            id="add_card_modal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-modification" role="document">
+                <div class="modal-content modal-content-modificaition">
+                    <!-- <div class="modal-header modal-header-modification">
+                            <h5 class="modal-title modal-title-modification" id="exampleModalLabel">
+                                Registrar Método de pago
+                            </h5>
+                            <button type="button" class="close close-modification" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div> -->
+                    <section class="modal-body modal-body-modification">
+                        <button
+                            type="button"
+                            class="close close-modification"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                            style="position: absolute; right: 3%;"
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+
+                        <iframe
+                            id="iframe_from"
+                            src="http://localhost/card-manager/{{ patient_id }}?add_card=true"
+                            frameborder="0"
+                            width="100%"
+                            height="100%"
+                        ></iframe>
+                    </section>
+                    <!-- <div class="modal-footer">
+                            <button class="btn btn-danger close--modal" data-dismiss="modal" aria-label="Close">Cerrar</button>
+                        </div> -->
+                </div>
+            </div>
+        </div>
 
         <script src="https://buscamed.do/assets/js/jquery-1.9.1.min.js"></script>
         <script src="https://buscamed.do/assets/js/bootstrap.min.js"></script>
