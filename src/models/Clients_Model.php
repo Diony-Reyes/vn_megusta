@@ -41,6 +41,23 @@
             // return [];
             return  $result->fetchAll(PDO::FETCH_OBJ);
         }
+        public static function getoreritems_with_deals($order_id) {
+            $connect = self::connectorDB();
+
+            if ($order_id == 0) {
+                return [];
+            } else {
+                $sql = "SELECT * 
+                    FROM cpnc_PaymentOrderItem 
+                    inner join cpnc_Deal on cpnc_PaymentOrderItem.itemId = cpnc_Deal.id
+                    inner join cpnc_DealI18N on cpnc_PaymentOrderItem.itemId = cpnc_DealI18N.dealId and cpnc_DealI18N.name = 'name'  
+                    where orderId = {$order_id};";
+                $result = $connect->query($sql);
+                // return [];
+                return  $result->fetchAll(PDO::FETCH_OBJ);
+
+            }
+        }
 
 
         public function validPayment($order, $auth_code) {

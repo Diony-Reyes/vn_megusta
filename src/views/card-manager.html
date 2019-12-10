@@ -22,11 +22,54 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:400,500,700">
 
+    <script>
+     window.parent.hideLoader();
+    </script>
 
     <style>
+    #paymentSuccess {
+        display: flex !important;
+    align-items: center;
+    justify-content: space-evenly;
+    }
+    #greenContainer .close--modal {
+    border-radius: 3px;
+    background-color: #3cc3f4;
+    color: #ffffff;
+    }
+
+    #bottomArea .add-button-modal, #greenContainer .close--modal {
+    border-radius: 3px;
+       
+    background-color: #3cc2f4;
+    }
+    #greenArea {
+    background-color: #3cc2f4;
+    }
+    .newt {
+        font-size: 20px !important;
+    font-weight: 600 !important;
+    margin-bottom: 10px !important;
+    }
+    body    {
+        {# background: #444444; #}
+    }
         #containerForm {
-            padding: 0;
+         padding: 30px;
         }
+        #containerForm .title {
+            color: #2f9dc8 !important;
+        }
+        #greenContainer {
+            background-color: #444444 !important;
+        }
+        #form_add_card .inputElements {
+    margin-bottom: 3px;
+}
+
+#form_add_card .add-button-modal {
+    margin: 0px !important;
+}
     </style>
 </head>
 
@@ -98,7 +141,7 @@
                     <div class="checked"></div> Pago realizado con éxito
                 </div>
 
-                <div class="notes" style="margin-top: 0;">
+                <div class="notes newt" style="margin-top: 0;">
                     Tarjeta Agregada
                 </div>
 
@@ -124,7 +167,7 @@
                     <div class="checked"></div> Tarjeta agregada con exito
                 </div>
 
-                <div class="notes" style="margin-top: 0;">
+                <div class="notes newt" style="margin-top: 0;">
                     Tarjeta Agregada
                 </div>
 
@@ -219,7 +262,7 @@
             <div class="inputElements">
                 <label for="card_type">Tipo de tarjeta</label>
                 <select class="modal-input" name="card_type" id="card_type" value="001">
-                    <option data-placeholder="true"></option>
+                    {# <option data-placeholder="true"></option> #}
                     <option value="001">Visa</option>
                     <option value="002">MasterCard</option>
                 </select>
@@ -230,25 +273,28 @@
                 <input class="modal-input" type="text" value="4111111111111111" name="card_number" id="number" placeholder="Numero de tarjeta" data-mask='0000000000000000'
                 />
             </div>
+          <div style="display: flex;"> 
             <div class="inputElements">
                 <label for="number">CVN</label>
                 <input class="modal-input" type="text" name="card_cvn" value="929" id="number_" placeholder="CVN" data-mask='000' />
             </div>
 
-            <div class="inputElements">
+            <div class="inputElements" style="margin-left: 15px;">
                 <label for="date">Fecha de vencimiento</label>
                 <input class="modal-input" type="text" name="card_expiry_date" id="date" value="09-2020" placeholder="MM/AAAA" data-mask="00-0000" />
             </div>
 
+          </div>
             {{data.vn_fields | raw }}
-
-            <button type="submit" id="submit" value="Confirm" class="btn btn-primary add-button-modal">Agregar</button>
-            <div class="btn close--modal closeit" data-dismiss="modal" aria-label="Close">Cerrar</div>
+             <div style="display: flex; padding-top: 15px; justify-content: space-between;"> 
+            <button style=" width: 80%;" type="submit" id="submit" value="Confirm" class="btn btn-primary add-button-modal">Agregar</button>
+            <div   style="    width: 80%; margin-left: 20px;" class="btn close--modal closeit" data-dismiss="modal" aria-label="Close">Cerrar</div>
+            </div>
         </form>
 
         <div class="termsConditions">
             <input type="checkbox" name="" id="terms"> Aceptar
-            <a href="http://www.buscamed.do/General/terms" target="_blank" rel="noopener noreferrer">&nbsp;Términos y Condiciones</a>
+            <a href="https://megusta.do/page/terms" target="_blank" rel="noopener noreferrer">&nbsp;Términos y Condiciones</a>
         </div>
 
         {{ data.vn_append | raw}}
@@ -274,6 +320,10 @@
     });
     $(".closetodeal").click (function ()  {
         window.parent.closeTodeal();
+        customEvent("ccc");
+    });
+    $(".add-button-modal").click (function ()  {
+        window.parent.showLoader();
         customEvent("ccc");
     });
     $("#myModal").show();

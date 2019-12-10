@@ -29,7 +29,7 @@
     // Render Twig template in route
     $app->get('/card-manager/{patient_id}/{order_id}', function ($request, $response, $args) {
                 
-        
+        // print_r($_REQUEST);die();
         $patient_id = $args['patient_id'];
         $order_id = $args['order_id'];
         $count_cards = count(( new Webservice())->get_cards($patient_id));
@@ -97,6 +97,9 @@
 
     $app->get("/vn_client/{patient_id}", function(Request $request, Response $response, $arg) {
         return $this->view->render($response, 'client-card-manager.html', $arg);
+    })->setName('profile');
+    $app->get("/vn_client/{patient_id}/{time}", function(Request $request, Response $response, $arg) {
+        return $this->view->render($response, 'client-card-manager-parent.html', $arg);
     })->setName('profile');
 
     function process481($data) {
@@ -280,8 +283,8 @@
         // print_r(MERCHANT_ID);die();
 
         // DF TEST: 1snn5n9w, LIVE: k8vif92e
-         define('DF_ORG_ID', visanet_vars()->org_live);
-        //  define('DF_ORG_ID', visanet_vars()->org_dev);
+        //  define('DF_ORG_ID', visanet_vars()->org_live);
+         define('DF_ORG_ID', visanet_vars()->org_dev);
         //  define('DF_ORG_ID', visanet_vars()->org_dev);
         session_start( ); 
         $sess_id  = session_id();
@@ -471,8 +474,26 @@
         return $data;
     } 
     function vn_form_factory($data, $access_key, $profile_id, $transaction_uuid, $signed_date_time, $sess_id) {
-        // item_0_tax_amount
-        $unsigned = "line_item_count,item_0_name,item_0_sku,item_0_unit_price,item_0_quantity,customer_ip_address,device_fingerprint_id,merchant_defined_data27,merchant_defined_data29,merchant_defined_data30,merchant_defined_data1,merchant_defined_data2,merchant_defined_data3,merchant_defined_data4,merchant_defined_data28";
+
+        $d_items = (new Webservice())->getoreritems_with_deals($data['order']);
+        $items = [];
+        foreach ($d_items as $k => $v) {
+            $items['item_'.$k.'_name' ] =  substr($v->value, 0, 40).'..';
+            $items['item_'.$k.'_sku'] = "SKU". $v->id. $data['key'].'_'.$sess_id;
+            $items['item_'.$k.'_unit_price'] = $v->price;
+            $items['item_'.$k.'_quantity'] = $v->quantity;
+            $items['item_'.$k.'_code'] =  $v->id;
+
+        }
+
+        $items_to_sign = implode(',', array_keys($items));
+
+        $comma = count($items) > 0 ? ",": "";
+      $lineitemcount = '';
+        if (count($d_items) > 0 ) {
+            $lineitemcount = "line_item_count,";
+        }
+        $unsigned = $items_to_sign.$comma.$lineitemcount."customer_ip_address,device_fingerprint_id,merchant_defined_data27,merchant_defined_data1,merchant_defined_data2,merchant_defined_data3,merchant_defined_data4,merchant_defined_data28";
         $signed = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,payment_method,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code";
 
         if ($data['payment_token'] == '') {
@@ -480,73 +501,38 @@
         } else {
             $signed .= ',payment_token';
         }
-        // $signed .= ',payment_token';
-        $cedula = '40220770107';// commerce identity
-        // print_r($data);die();
+        // $cedula = '40220770107';// commerce identity
         $merchant_defined_data2 = 'megusta.do';
-        // print_r($data);die();
-        if ($data['value'] == 'patient') {
-            // DOC INFO
-            // $user = $this->webservice_model->get_patient($data['key']);
-            // print_r($user);die();
-            $cedula = '40220770108';// user identity
-            $merchant_defined_data2 = "megusta.do";
 
-            $item_0_name = "Pago de cita";
-            $item_0_sku = "SKU".$data['key'].'_'.$sess_id;
-            $item_0_unit_price = $data['amount']; 
-            // $item_0_tax_amount = "144"; 
-            $item_0_quantity = "1";
-            if (trim($data['card_id']) == '') {
-                $tokenizada = 'TOKENIZACION NO';
-            } else {
-                $tokenizada = 'TOKENIZACION YES';
-            }
-            
-            if ($data['type'] == 'create_payment_token') {
-                $tokenizada = 'TOKENIZACION NO';
-                $merchant_defined_data2 = 'megusta.do';
-            }
-          
+        // 'line_item_count' => '1',
+        // 'item_0_name' => $item_0_name,
+        // 'item_0_sku' => $item_0_sku,
+        // 'item_0_unit_price' => $item_0_unit_price,
+        // 'item_0_quantity' => $item_0_quantity,
+      
+
+        // $item_0_name = "Pago de cita";
+        // $item_0_sku = "SKU".$data['key'].'_'.$sess_id;
+        // $item_0_unit_price = $data['amount']; 
+        // // $item_0_tax_amount = "144"; 
+        // $item_0_quantity = "1";
+        
+
+        if ($data['payment_token'] != '') {
+            $tokenizada = 'TOKENIZACION YES';
         } else {
-            $item_0_name = "Inscripcion de recurrencia";
-            $item_0_sku = "SKU".$data['key'].'_'.$sess_id;
-            $item_0_unit_price = '0'; 
-            // $item_0_tax_amount = "135"; 
-            $item_0_quantity = "1";
             $tokenizada = 'TOKENIZACION NO';
         }
-        // item_#_tax_amount
-            //             <input type="hidden" name="customer_ip_address" value=" @$_SERVER['REMOTE_ADDR'] ">
-            //             <input type="hidden" name="item_0_unit_price" value="10.00" />
-            //             <input type="hidden" name="item_0_quantity" value="100" />
-
-            //             <input type="hidden" name="line_item_count" value="2" />
-            //    1        <input type="hidden" name="item_0_sku" value="sku001" />
-            //             <input type="hidden" name="item_0_code" value="KFLTFDIV" />
-            //             <input type="hidden" name="item_0_name" value="KFLTFDIV" />
-            //             <input type="hidden" name="item_0_quantity" value="100" />
-            //             <input type="hidden" name="item_0_unit_price" value="5.72" />
-                    
-            //             <input type="hidden" name="item_0_sku" value="sku002" />
-            //             <input type="hidden" name="item_0_code" value="KFLTFD70" />
-            //             <input type="hidden" name="item_0_name" value="KFLTFD70" />
-
-            // i. Nombre de ítem o servicio vendido item_0_name
-            // j. 1KU de ítem (identificador del producto) item_0_sku
-            // k. Precio unitario del producto item_0_unit_price
-            // l. Impuesto (si maneja impuestos por ítem) item_0_tax_amount
-            // m. Cantidad del producto item_0_quantity
-            // n. Ip del comprador     customer_ip_address
-
-
+        
+        
+   
         $fields =  [
-            'line_item_count' => '1',
-            'item_0_name' => $item_0_name,
-            'item_0_sku' => $item_0_sku,
-            'item_0_unit_price' => $item_0_unit_price,
-            // 'item_0_tax_amount' => $item_0_tax_amount,
-            'item_0_quantity' => $item_0_quantity,
+           
+            // 'line_item_count' => count($d_items),
+            // 'item_0_name' => $item_0_name,
+            // 'item_0_sku' => $item_0_sku,
+            // 'item_0_unit_price' => $item_0_unit_price,
+            // 'item_0_quantity' => $item_0_quantity,
             'customer_ip_address' => @$_SERVER['REMOTE_ADDR'],
             'access_key'=> $access_key,
             'profile_id'=> $profile_id,
@@ -569,25 +555,14 @@
             'bill_to_address_state'=> $data['bill_to_address_state'],//"CA",
             'bill_to_address_country'=> $data['bill_to_address_country'],//"DO",
             'bill_to_address_postal_code'=> $data['bill_to_address_postal_code'],//"94043",
-           
-            // 'merchant_defined_data1' => $data['key'], // KEY:doctor|patient -> redefined to: retail (valor mandatorio)
-            // 'merchant_defined_data2' => $data['value'],// Nombre del comercio que recibe el pago: megusta.do, cuando sea de un paciente a un doctor es el nombre del doctor
-            // 'merchant_defined_data3' => $data['url_return_web'], // redefined to web
-            // 'merchant_defined_data4' => $data['appointment_id'],// doctor_id
-            // 'merchant_defined_data28' => $data['card_id'],
-            // 'merchant_defined_data27' => $data['card_id'],//TOKENIZACION YES|TOKENIZACION NO -> cuando es con token yes, cuando es una compra sin token no
-            // 'merchant_defined_data29' => $data['card_id'],//tipo de documento: cedula|pasaporte
-            // 'merchant_defined_data30' => $data['card_id'],//valor del documento
-            // // redefinicion
-
             'merchant_defined_data1' => 'retail', // KEY:doctor|patient -> redefined to: retail (valor mandatorio)
             'merchant_defined_data2' => $merchant_defined_data2 ,// Nombre del comercio que recibe el pago: megusta.do, cuando sea de un paciente a un doctor es el nombre del doctor
             'merchant_defined_data3' => 'web', // redefined to web
             'merchant_defined_data4' => $data['key'],// doctor_id
             'merchant_defined_data28' => $data['key'].'::'.$data['value'].'::'.$data['url_return_web']."::". $data['appointment_id']."::".$data['card_id']."::".$data['order'],
             'merchant_defined_data27' => $tokenizada,//TOKENIZACION YES|TOKENIZACION NO -> cuando es con token yes, cuando es una compra sin token no
-            'merchant_defined_data29' => 'cedula',//tipo de documento: cedula|pasaporte
-            'merchant_defined_data30' => $cedula,//valor del documento,
+            // 'merchant_defined_data29' => 'cedula',//tipo de documento: cedula|pasaporte // no se envia cuando no tiene cedula
+            // 'merchant_defined_data30' => $cedula,//valor del documento,// no se envia cuando no tiene cedula
             'device_fingerprint_id' =>  $sess_id,
 
 
@@ -598,6 +573,12 @@
             $fields = array_merge (['payment_token' => $data['payment_token']], $fields );
         }
 
+        if (count($d_items) > 0 ) {
+            $fields = array_merge([  'line_item_count' => (string)count($d_items)], $fields);
+        }
+
+        $fields = array_merge($items, $fields);
+        // print_r($fields);die();
         return $fields;
     }
 

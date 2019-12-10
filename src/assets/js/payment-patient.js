@@ -134,7 +134,13 @@ if (patient_id) {
     });
 
     document.querySelector(".button_payment").addEventListener("click", ev => {
+
+        // $('#cards_iframe').get(0).contentDocument.location.reload()
+
         $("#add_card_modal").modal("show");
+        $("#iframek").empty();
+        $("#iframek").append(`<iframe id="iframe_from" src="https://megusta.do/webservice/card-manager/${patient_id}/0?add_card=true" frameborder="0"
+        width="100%" height="100%"></iframe>`)
     });
 
     $("#add_card_modal").on("hidden.bs.modal", function (e) {
