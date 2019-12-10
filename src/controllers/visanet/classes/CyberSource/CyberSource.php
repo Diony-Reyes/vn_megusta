@@ -594,7 +594,6 @@
 			$subscription_info = new \stdClass();
 			$subscription_info->subscriptionID = $subscription_id;
 			$request->recurringSubscriptionInfo = $subscription_info;
-			
 			$response = $this->run_transaction( $request );
 			
 			return $response;
@@ -768,7 +767,25 @@
 				),
 			);
 
-			$context = stream_context_create( $context_options );
+		// HACK FOR ENVIRONMENT
+			if ($this->environment == self::ENV_TEST) {
+				$context =stream_context_create(
+					['http' => array(
+						'timeout' => $this->timeout,
+					),
+						'ssl' => [
+							'verify_peer'       => false,
+							'verify_peer_name'  => false,
+							'allow_self_signed' => true
+						]
+					]
+				);
+			}	else if ($this->environment == self::ENV_LIVE) {
+				$context = stream_context_create( $context_options );
+			}
+			// ---- HACK FOR ENVIRONMENT
+
+			// $context = stream_context_create( $context_options );
 
 			// options we pass into the soap client
 			$soap_options = array(
@@ -776,7 +793,8 @@
 				'encoding' => 'utf-8',		// set the internal character encoding to avoid random conversions
 				'exceptions' => true,		// throw SoapFault exceptions when there is an error
 				'connection_timeout' => $this->timeout,
-				'stream_context' => $context
+				'stream_context' => $context,
+				'trace' => 1
 			);
 
 			if (isset($this->proxy['host']) && isset($this->proxy['port'])) {
@@ -794,9 +812,11 @@
 				$soap_options['cache_wsdl'] = WSDL_CACHE_BOTH;
 			}
 
+		
 			try {
-				// create the soap client
 				$soap = new \SoapClient( $this->environment, $soap_options );
+				// $soap = new \SoapClient( $this->environment, $options );
+				// create the soap client
 			}
 			catch ( SoapFault $sf ) {
 				throw new CyberSource_Connection_Exception( $sf->getMessage(), $sf->getCode() );

@@ -1,11 +1,20 @@
 var patient_id = document.querySelector(".patientId").textContent;
+// function customEvent(name) {
+//     document.dispatchEvent(new CustomEvent(name, {
+//         bubbles: true,
+//         cancelable: true
+//     }));
+// }
+
+
+
 
 if (patient_id) {
     function showCards() {
         $.ajax({
-            // url: `https://megusta.do/webservice/get_patient_cards/${patient_id}`,
-            url: `http://localhost/get_patient_cards/${patient_id}`,
-            success: function(data) {
+            url: `https://megusta.do/webservice/get_patient_cards/${patient_id}`,
+            // url: `http://localhost/get_patient_cards/${patient_id}`,
+            success: function (data) {
                 document.querySelector(".cards").innerHTML = "";
 
                 if (data.length > 0) {
@@ -66,10 +75,10 @@ if (patient_id) {
 
     function deleteCard(card_id) {
         $.ajax({
-            type: "delete",
+            type: "post",
             // url: `https://buscamed.do/webservice/vc_delete_card/${patient_id}/${card_id}`,
-            url: `http://localhost/delete_card/${patient_id}/${card_id}`,
-            success: function(data) {
+            url: `https://megusta.do/webservice/delete_card/${patient_id}/${card_id}`,
+            success: function (data) {
                 swal({
                     title: "Tarjeta Eliminada",
                     icon: "success"
@@ -90,8 +99,8 @@ if (patient_id) {
             $.ajax({
                 type: "POST",
                 // url: `https://buscamed.do/webservice/vc_make_preferred_card/${patient_id}/${ev.target.value}`,
-                url: `http://localhost/vc_make_preferred_card/${patient_id}/${ev.target.value}`,
-                success: function(data) {
+                url: `https://megusta.do/webservice/vc_make_preferred_card/${patient_id}/${ev.target.value}`,
+                success: function (data) {
                     const space = document.createElement("div");
                     space.style.marginBottom = "5%";
 
@@ -128,12 +137,12 @@ if (patient_id) {
         $("#add_card_modal").modal("show");
     });
 
-    $("#add_card_modal").on("hidden.bs.modal", function(e) {
+    $("#add_card_modal").on("hidden.bs.modal", function (e) {
         // document.getElementById("iframe_from").src = `${base_url}Webservice/create_token_patient/${patient_id}`;
         showCards();
     });
 
-    window.closeIFrame = function() {
+    window.closeIFrame = function () {
         $("#add_card_modal").modal("hide");
     };
 }

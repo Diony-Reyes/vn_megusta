@@ -12,21 +12,29 @@
     $app->get("/vn_catch_payment", function(Request $request, Response $response, $arg) {
         echo "IM IN THE MATRIX";
         print_r($_REQUEST);die();
+   
         return $response->write($result);
     });
     $app->post("/vncallback", function(Request $request, Response $response, $arg) {
         echo "IM IN THE MATRIX BUT INNN";
-        print_r($_REQUEST);die();
+        print_r($_REQUEST);
+        $response_info  =  vn_manage_response_payment($_REQUEST);
+        header("location:". $response_info->redirect_uri."?".http_build_query($_REQUEST));
+        
         return $response->write($result);
     });
 
 
+
     // Render Twig template in route
-    $app->get('/card-manager/{patient_id}', function ($request, $response, $args) {
+    $app->get('/card-manager/{patient_id}/{order_id}', function ($request, $response, $args) {
+                
+        
         $patient_id = $args['patient_id'];
+        $order_id = $args['order_id'];
         $count_cards = count(( new Webservice())->get_cards($patient_id));
         $create_token = false;
-
+       
         if($count_cards <= 0 || isset($_GET['add_card']) && !empty($_GET['add_card'])) {
             $cards = [];
         } else {
@@ -35,9 +43,21 @@
 
         if(isset($_GET['add_card']) && !empty($_GET['add_card'])) $create_token = true;
         
+        $link = "";
+        if(isset($_GET['reason_code']) && !empty($_GET['reason_code']) && $_GET['reason_code'] == '481') {
+            $link = "https://megusta.do/webservice/card-manager/".$patient_id.'/'.$order_id;
+        }
+        if(isset($_GET['req_transaction_type']) && !empty($_GET['req_transaction_type']) && $_GET['req_transaction_type'] == 'create_payment_token') {
+            $link = "https://megusta.do/webservice/vn_client/".$patient_id;
+        }
+
+        $amount = @(new Webservice())->getamountbyorder($order_id)->amount;
+        $amount = !!$amount ? $amount : "0.00";
+
+        // print_r($amount);die();
         // $_GET
         // print_r($d);die();
-        $data = payment_patient($patient_id, $cards, $create_token);
+        $data = payment_patient($patient_id, $cards, $create_token, $order_id, $amount);
  
         // die();
         $showForm = true;
@@ -62,14 +82,13 @@
         $list_cards =   $cards;
         $cards = $list_cards;
 
-// print_r($list_cards);die();
-        
-
         $args['data']= $data;
         $args['list_cards']=$list_cards;
         $args['showForm']= [];
         $args['hasError']= [];
         $args['cards']= [];
+        $args['link']= $link;
+        $args['amount']= number_format($amount,2);
         $args['gett'] = $_GET;
         $args['is_valid_hash'] = true;
         
@@ -79,6 +98,159 @@
     $app->get("/vn_client/{patient_id}", function(Request $request, Response $response, $arg) {
         return $this->view->render($response, 'client-card-manager.html', $arg);
     })->setName('profile');
+
+    function process481($data) {
+
+     
+        $d = $data['req_merchant_defined_data28']; // TENTATIVO <- Reservar el merchant defined data
+        // REFERENCE: $data['key'].':'.$data['value'].':'.$data['url_return_web'].":". $data['appointment_id'].":".$data['card_id'],
+        $info = explode('::', $d);
+       
+        $id   = $info[0];
+        $type = $info[1];
+        $url_web_return = $info[2];
+        $appointment_id = $info[3];
+        $card = $info[4];
+        $order = $info[5];
+        $req_transaction_type = $data['req_transaction_type'];
+        $c = (new Webservice())->gateway(null, true);
+        
+        
+        
+        $request_id = $data['transaction_id'];
+        $amount     = $data['req_amount'];
+        $reference     = $data['req_reference_number'];
+        // print_r($order);die();
+        // perform the reversal
+        try{
+            $c->reverse_authorization( $request_id, $amount, $reference );
+
+        } catch (Exception $e){
+            
+        }
+        // print_r($c);die();
+        
+    }
+
+     function getredemptionCode($length=10)
+	{
+		list($usec, $sec) = explode(' ', microtime());
+  		mt_srand((float) $sec + ((float) $usec * 100000));
+  		$min = str_pad('1',$length,'0') * 1;
+  		$max = str_pad('9', $length, '9') * 1;
+  		
+  		// $exists = 1;
+		// while($exists)
+		// {
+		// 	$code = mt_rand($min, $max);
+		// 	$exists = MDealCoupon::model()->exists('redemptionCode=?',array($code));
+		// }
+  		return $code = mt_rand($min, $max);;
+	}
+	
+    function vn_manage_response_payment($data) {
+        // print_r($data);
+        $d = $data['req_merchant_defined_data28']; // TENTATIVO <- Reservar el merchant defined data
+        // REFERENCE: $data['key'].':'.$data['value'].':'.$data['url_return_web'].":". $data['appointment_id'].":".$data['card_id'],
+        $info = explode('::', $d);
+
+        $id   = $info[0];
+        $type = $info[1];
+        $url_web_return = $info[2];
+        $appointment_id = $info[3];
+        $card_id = $info[4];
+        $order = $info[5];
+        $req_transaction_type = $data['req_transaction_type'];
+        
+        if ($data['reason_code'] == '481') {
+            process481($data);
+            // die('481');
+        }
+        if ($data['decision'] == 'ACCEPT') {
+            if ($type == 'patient') {
+                
+                // if transaction type includes create_payment_token
+                if (strpos( $data['req_transaction_type'] ,'create_payment_token') !== false) {
+                    $cards = (new Webservice())->get_cards($id);
+                   
+                    $preferred = 0;
+                    if (!$cards) {
+                        $preferred = 1;
+                    }
+                    $card_id =  (new Webservice())->add_card_c([
+                        "patient_id" => $id,
+                        'subscription_id' => $data['payment_token'],	
+                        'card_hash' => $data['req_card_number'],	
+                        'preferred' => $preferred,
+                        'type' => $data['req_card_type']
+                    ]);
+                  
+                }
+
+                if (strpos( $data['req_transaction_type'] ,'sale') !== false) {
+                   
+                    (new Webservice())->validPayment($order, $data['transaction_id']);
+                   
+                   
+                    $items = (new Webservice())->getoreritems($order);
+        
+
+                    foreach ($items as $key => $value) {
+                        $now = date('Y-m-d H:i:s',time());      
+                        $hash =  (new Webservice())->generateHash();
+                        $redemptionCode = getredemptionCode(10);
+                        $created =$now;
+                        $orderId =$order;
+                        $userId =$id;
+                        (new Webservice())->generateCoupon([
+                            'orderId' => $orderId,
+                            'dealId' => $value->itemId,
+                            'userId' => $userId,
+                            'status' => '1',
+                            'userStatus' => '1',
+                            'hash' => $hash,
+                            'redemptionCode' => $redemptionCode,
+                            'created' => $created,
+        
+                        ]);
+                        (new Webservice())->updatePurchaseCounter($value->itemId);
+                        
+                    }
+                    //clean a
+                    session_start();  
+                    unset($_SESSION['payment.cart']);
+                    
+
+                    // if transaction type includes sale
+                    // $transaction_id = $this->VN_Patient_Transactions_Model->register_transaction([
+                    //     'status' => $data['decision'],
+                    //     'appointment_id' => $appointment_id,	
+                    //     'orders' => $orders,
+                    //     'doctor_id' => $doctor_id,
+                    //     'method_payment' => 'card',
+                    //     'card_id' => $card_id,	
+                    //     'amount' => $data['req_amount'],	
+                    //     'patient_id' => $id,
+                    //     'source' => '',
+                    //     'transaction_info' => json_encode($data)
+                    // ]);
+                    // $this->VN_Patient_Transactions_Model->pay_appointment($appointment_id);
+                    // $this->sendConfirmationEmail([
+                    //     'transaction_id' => $data['transaction_id'],
+                    //     'appointment' => $this->getappinfo($appointment_id),	
+                    //     'card_hash' => $data['req_card_number'],	
+                    //     'amount' => 'DOP $'.$data['req_amount'],	
+                    // ]);
+                }
+            }
+        }
+ 
+        // Include redirect_uri field in response
+        return (object)[
+            'redirect_uri' => $url_web_return
+        ];
+    }
+
 
     function visanet_vars() {
         return (object)[
@@ -96,7 +268,10 @@
         ];
     }
 
-    function payment_patient($patient_id, $list_cards, $create_token = false) {
+    function payment_patient($patient_id, $list_cards, $create_token = false, $order_id, $amount) {
+      
+
+
         // $app_info = $this->getappinfo($app_id);            
         // $template['has_orders'] = $this->apphasorders($app_id);
         // print_r($app_info);die();
@@ -117,24 +292,25 @@
 
         $template['is_valid_hash'] = true;
         $template["page"] = "Template-modal-payment/add_card_modal";
-        $url = 'https://megusta.do';
+        $url = 'https://megusta.do/webservice/card-manager/'.$patient_id.'/'.$order_id;
         // $url = 'http://'.$_SERVER[HTTP_HOST].'/Webservice/payment_patient/'.$patient_id."/".$app_id."/".$amount;
         // $template['list_cards'] = $this->vn_patient_get_preferred($patient_id);
         $template['list_cards'] =$list_cards;
    
         $template['appointment_info'] = [];
         
-        $template['amount'] = 1000;
         if ($create_token) {
-            $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', '0.00', 'create_payment_token', false, $url, 0, 0);
+        
+            $url = 'https://megusta.do/webservice/card-manager/'.$patient_id.'/0';
+            $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', '0.00', 'create_payment_token', false, $url, 0, 0, false, []);
         } else {
                 if(!empty($list_cards)) {
                     
                     // $template['vn_fields'] = $this->vn_export_fields($sess_id, $app_info->doctor_id, $patient_id, 'patient', $amount, 'sale', false, $url, $app_id, $template['list_cards']->id, $order);
-                    $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', 1000, 'sale', false, $url, 0, 0);
+                    $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', $amount, 'sale', false, $url, 0, 0, $order_id,  $list_cards);
                 } else {
                     $template['createAndSale'] = true;
-                    $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', 1000, 'create_payment_token,sale', false, $url, 0, 0);
+                    $template['vn_fields'] = vn_export_fields($sess_id, 1, $patient_id, 'patient', $amount, 'create_payment_token,sale', false, $url, 0, 0, $order_id,  $list_cards);
                 }
 
         }
@@ -156,7 +332,22 @@
      * @param [type] $is_recurring: set up recurrency, When is recurring, the amount field is the recurrent amount
      * @return void
     */
-    function vn_export_fields($sess_id = null, $doctor_id = null, $id, $user_type, $amount,$transaction_type, $is_recurring = false, $url_return_web, $appointment_id = '', $card_id = '', $order='') {
+    function vn_export_fields(
+        $sess_id = null, 
+        $doctor_id = null, 
+        $id, 
+        $user_type = 'patient', 
+        $amount,
+        $transaction_type, 
+        $is_recurring = false, 
+        $url_return_web, 
+        $appointment_id = '', 
+        $card_id = '', 
+        // $order='', 
+        $order_id = false, 
+        $list_cards ) {
+        
+        // print_r($list_cards);die();
         /**
          *  @TODO: create user validation
          */
@@ -181,25 +372,16 @@
         $signed_date_time = visanet_vars()->signed_date_time;
         $secret_key  = visanet_vars()->secret_key;
         $doctor = [];
-        //    if ($doctor_id) {
-        //         $doctor = (object)[];//$this->Doctor_Model->get_doctor_data($doctor_id);
-        //         $access_key = $doctor->vn_access_key;
-        //         $profile_id = $doctor->vn_profile_id;
-        //         $transaction_uuid = $transaction_uuid;
-        //         $signed_date_time = $signed_date_time;
-        //         $secret_key  = $doctor->vn_secret_key;
-
-        //         // print_r($doctor);die();
-        //     } else {
-        //         if ($user_type == 'doctor') {
-        //             $doctor = $this->Doctor_Model->get_doctor_data($id);
-        //         }
-        //     }
 
 
         $append_info = get_billing_info_by_type($id, $user_type);
-        $payment_token = '';
-        $payment_token = '5758177340026333504003';
+        // print_r($list_cards[0]->subscription_id);die();
+        if (empty($list_cards)) {
+            $payment_token = '';
+        } else {
+            $payment_token = $list_cards[0]->subscription_id;
+
+        }
         if ($card_id  != '') {
             $card = $this->VN_Patient_Cards_Model->get_card($card_id);
             $payment_token =  $card->subscription_id;
@@ -219,7 +401,7 @@
             'card_id' => $card_id,
             'payment_token' => $payment_token,
             'doctor_data' => $doctor,
-            'order' => $order
+            'order' => $order_id
         ], $append_info), $access_key, $profile_id, $transaction_uuid, $signed_date_time, $sess_id);
         
         $fields = "";
@@ -301,7 +483,7 @@
         // $signed .= ',payment_token';
         $cedula = '40220770107';// commerce identity
         // print_r($data);die();
-        $merchant_defined_data2 = 'buscamed.do';
+        $merchant_defined_data2 = 'megusta.do';
         // print_r($data);die();
         if ($data['value'] == 'patient') {
             // DOC INFO
@@ -323,7 +505,7 @@
             
             if ($data['type'] == 'create_payment_token') {
                 $tokenizada = 'TOKENIZACION NO';
-                $merchant_defined_data2 = 'buscamed.do';
+                $merchant_defined_data2 = 'megusta.do';
             }
           
         } else {
@@ -389,7 +571,7 @@
             'bill_to_address_postal_code'=> $data['bill_to_address_postal_code'],//"94043",
            
             // 'merchant_defined_data1' => $data['key'], // KEY:doctor|patient -> redefined to: retail (valor mandatorio)
-            // 'merchant_defined_data2' => $data['value'],// Nombre del comercio que recibe el pago: buscamed.do, cuando sea de un paciente a un doctor es el nombre del doctor
+            // 'merchant_defined_data2' => $data['value'],// Nombre del comercio que recibe el pago: megusta.do, cuando sea de un paciente a un doctor es el nombre del doctor
             // 'merchant_defined_data3' => $data['url_return_web'], // redefined to web
             // 'merchant_defined_data4' => $data['appointment_id'],// doctor_id
             // 'merchant_defined_data28' => $data['card_id'],
@@ -399,7 +581,7 @@
             // // redefinicion
 
             'merchant_defined_data1' => 'retail', // KEY:doctor|patient -> redefined to: retail (valor mandatorio)
-            'merchant_defined_data2' => $merchant_defined_data2 ,// Nombre del comercio que recibe el pago: buscamed.do, cuando sea de un paciente a un doctor es el nombre del doctor
+            'merchant_defined_data2' => $merchant_defined_data2 ,// Nombre del comercio que recibe el pago: megusta.do, cuando sea de un paciente a un doctor es el nombre del doctor
             'merchant_defined_data3' => 'web', // redefined to web
             'merchant_defined_data4' => $data['key'],// doctor_id
             'merchant_defined_data28' => $data['key'].'::'.$data['value'].'::'.$data['url_return_web']."::". $data['appointment_id']."::".$data['card_id']."::".$data['order'],

@@ -30,33 +30,47 @@ trait Visanet_Security {
 
     private function vault() {
         // prod
-        $credentials = (object)[
+        // $credentials = (object)[
+        //     'org_dev'=> '1snn5n9w',
+        //     'org_live'=> 'k8vif92e',
+        //     'secret_key' => '7bf10c540f08438e8ec4f9e3d2959c8a9af5cb18e69c474c85be66a4fc4be4bb713257dd94c64f66b3e7a93401a719d6908bd73dc3cc45e1a2a97b36978c4244cfc05243c3424b529b326dedb6c5ecc192fae525d24143529907928d17fe1e836dddfde958dc47e889da876608861dafb89cef95133146fe87dec264283d605a',
+        //     'access_key'=> '8456a8f5ecb83ba4a25ec239d6ae0a71',
+        //     'profile_id'=> '47EC6C53-9B6F-47AA-89AA-70CE446D13AD',
+        //     'transaction_uuid'=>  uniqid(),
+        //     'signed_date_time'=> gmdate("Y-m-d\TH:i:s\Z"),
+        //     'merchant_id' => 'visanetdr_000000430807001',
+        //     'transaction_key' => '/QPGAXqTWDmA633HMdjImXLShlw9epYy0O6cS8MBXOlNwK8rOKBJy26cRT7Bk09euVTMS1r+mAQVznGOMXEzzugEIA8z+DhJ/fw4co7wNnFf1y03iYTgT6gfo9D+072lf2oALc1rmztg65t747QXTPZpbMkCplh9ZODo+4YCDIFifPQIe1XRBjOarhwAGHUIFSfdM33zFlciXrshxUyvesfAg0Twxx/B0RUSjuJ2jOS4nxyq4hDPU9UC7wSwoJMB3tQNOaUUWkQkdKm+/IdCwCZgSkFcyGVNhySwyHqXh/oIm/mz1ud2KrZ29/l9PlOg3GglO/UceZMcdxXekjfe5w==',
+            
+        // ];
+
+        return (object)[
+            'version' => '0.1',
+            'name' => 'Visanet e-commerce',
             'org_dev'=> '1snn5n9w',
             'org_live'=> 'k8vif92e',
-            'secret_key' => '7bf10c540f08438e8ec4f9e3d2959c8a9af5cb18e69c474c85be66a4fc4be4bb713257dd94c64f66b3e7a93401a719d6908bd73dc3cc45e1a2a97b36978c4244cfc05243c3424b529b326dedb6c5ecc192fae525d24143529907928d17fe1e836dddfde958dc47e889da876608861dafb89cef95133146fe87dec264283d605a',
-            'access_key'=> '8456a8f5ecb83ba4a25ec239d6ae0a71',
-            'profile_id'=> '47EC6C53-9B6F-47AA-89AA-70CE446D13AD',
+            'secret_key' => 'a2f5de821ca849418cc151b5ee43fbddb1642ebd7c9c4bb2909452f5614aedaafa74a1b7abdd49ec824b22f1ce16aa5d4c6a5faa90254c479dd582dd62bc3d30a6e59f0351d949dc9eb05dcbee3e9dcb734884e2fc734a7787157e1306057f3bc8b31d267e5346139562ca503510faefbc5dea5ae11d48e598c891279772120e',
+            'access_key'=> 'c542e1a45b0c33fc991190fd22d5fd79',
+            'profile_id'=> 'B0397FE6-D1B7-4C00-BBE1-CAA86EA92566',
             'transaction_uuid'=>  uniqid(),
             'signed_date_time'=> gmdate("Y-m-d\TH:i:s\Z"),
-            'merchant_id' => 'visanetdr_000000430807001',
-            'transaction_key' => '/QPGAXqTWDmA633HMdjImXLShlw9epYy0O6cS8MBXOlNwK8rOKBJy26cRT7Bk09euVTMS1r+mAQVznGOMXEzzugEIA8z+DhJ/fw4co7wNnFf1y03iYTgT6gfo9D+072lf2oALc1rmztg65t747QXTPZpbMkCplh9ZODo+4YCDIFifPQIe1XRBjOarhwAGHUIFSfdM33zFlciXrshxUyvesfAg0Twxx/B0RUSjuJ2jOS4nxyq4hDPU9UC7wSwoJMB3tQNOaUUWkQkdKm+/IdCwCZgSkFcyGVNhySwyHqXh/oIm/mz1ud2KrZ29/l9PlOg3GglO/UceZMcdxXekjfe5w==',
-            
+            'merchant_id' => 'visanetdr_000000431651001',
+            'transaction_key' => 'Xkj7wkZGeSQ2Dty1laqgk6xia9VLmM+jH1zv3z+TS6hSBB9B9vhwXGNdi5lCm+Ha5gMakj3FbzJl4RpZQFfI8l0kleXaYX+OUcIEloD2nzERkKS57uJR39Nky6OMhAmmLg4/w7N4ntOafTt3Aksrz7pcMVvCz+9v8jZ/K7MitC+2EGaT7ScL0TWDQ/k2Lc1nSxfZlxE2H2xWK1dYtYbMXKA2SwbkHl3IZp0Xxplz3oIczO+OiwRUasYKcW0RBDDPDmWasmXoLe6QKWwQTM9xCiDqnkSTG5tXXjNx9MwQZ0RfG1JlYlXjmgC2JRkPTSiWwvzusVUiUsp3yNC/6nFLkA==',
         ];
-        if ($this->getMode() == $this->prod) {
-            $credentials = (object)[
-                'merchant_id' => 'visanetdr_000000430807001',
-                'profile_id'=> 'E27A421D-A3E5-4F25-83A0-76D7600E5C7A',
-                'org_dev'=> 'k8vif92e',
-                // 'org_dev'=> '1snn5n9w',
-                'org_live'=> 'k8vif92e',
-                'secret_key' => '1677ee713b3840edb71d7209404d0a82d154d27fabde43e1b90b252f7adc7d906bf612026f8f4419bb57c3959b25a84233417f3112524eea92d20a2f9c81ad09120783c33ce04b7fa9568fda6725d620f06c230a48364c8b8ac137b11d898e4f43edb2aa0c264d5c8369e815c97a541e5c35add83faa492aa544273a6f42efd8',
-                'access_key'=> '4cf48e39d47f36abaf8bf59e0c71ea0d',
-                'transaction_uuid'=>  uniqid(),
-                'signed_date_time'=> gmdate("Y-m-d\TH:i:s\Z"),
-                'transaction_key' => 'sQLVxgYZCZxIVtt1ULtZ5yhrKvcRy6ibrKIgpF7nw5gcL1VYvuQ58HbbHnaAwqD7sZMmSGlDbjI/WS5Y3C9MR2jig787y0rLaDvVDfO+igYfHpDyVR9mSXBbAHOfxYytx5mwb0JXoIFkdxSawD9ZcvGqTtumTR+TtPUxHCZ2U1WIhZiLuF8os2iGLSTU6XXcWXcqa/0cev7NrOuUkNl06D8xelHjma88KVyOrPKurwYPIT5I/k6D0GEUdK0BCP/iYgUmMlSAJet1nDPRaKZtECcrv2jpKWwZZl4+LDJcf8jCG09PrcaVQVPDDfbLAB+xJjD44TziucvxhIUuTdMP4g=='
-            ];
-        }
-        return $credentials;
+        // if ($this->getMode() == $this->prod) {
+        //     $credentials = (object)[
+        //         'merchant_id' => 'visanetdr_000000430807001',
+        //         'profile_id'=> 'E27A421D-A3E5-4F25-83A0-76D7600E5C7A',
+        //         'org_dev'=> 'k8vif92e',
+        //         // 'org_dev'=> '1snn5n9w',
+        //         'org_live'=> 'k8vif92e',
+        //         'secret_key' => '1677ee713b3840edb71d7209404d0a82d154d27fabde43e1b90b252f7adc7d906bf612026f8f4419bb57c3959b25a84233417f3112524eea92d20a2f9c81ad09120783c33ce04b7fa9568fda6725d620f06c230a48364c8b8ac137b11d898e4f43edb2aa0c264d5c8369e815c97a541e5c35add83faa492aa544273a6f42efd8',
+        //         'access_key'=> '4cf48e39d47f36abaf8bf59e0c71ea0d',
+        //         'transaction_uuid'=>  uniqid(),
+        //         'signed_date_time'=> gmdate("Y-m-d\TH:i:s\Z"),
+        //         'transaction_key' => 'sQLVxgYZCZxIVtt1ULtZ5yhrKvcRy6ibrKIgpF7nw5gcL1VYvuQ58HbbHnaAwqD7sZMmSGlDbjI/WS5Y3C9MR2jig787y0rLaDvVDfO+igYfHpDyVR9mSXBbAHOfxYytx5mwb0JXoIFkdxSawD9ZcvGqTtumTR+TtPUxHCZ2U1WIhZiLuF8os2iGLSTU6XXcWXcqa/0cev7NrOuUkNl06D8xelHjma88KVyOrPKurwYPIT5I/k6D0GEUdK0BCP/iYgUmMlSAJet1nDPRaKZtECcrv2jpKWwZZl4+LDJcf8jCG09PrcaVQVPDDfbLAB+xJjD44TziucvxhIUuTdMP4g=='
+        //     ];
+        // }
+        // return $credentials;
         // dev
         // return (object)[
         //     'org_dev'=> '1snn5n9w',

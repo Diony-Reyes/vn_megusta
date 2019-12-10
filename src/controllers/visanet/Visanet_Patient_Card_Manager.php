@@ -56,13 +56,41 @@ trait Visanet_Patient_Card_Manager {
                 // $this->VN_Patient_Cards_Model->delete_card($patient_id, $card_id);
             } catch ( Exception $e ) {
             
-                // return $this->jsonResponse([
-                //     'error' => $e->getCode() . ': ' . $e->getMessage() . '<br/>' . PHP_EOL
-                // ]);
+                return $this->jsonResponse([
+                    'error' => $e->getCode() . ': ' . $e->getMessage() . '<br/>' . PHP_EOL
+                ]);
             }
             
             $whereClause = " WHERE id = {$card_id} AND patient_id = {$patient_id}";
             __Database::__delete("vn_patient_cards", $whereClause);
+            print_r($c);die();
+            // $this->VN_Patient_Cards_Model->delete_card($patient_id, $card_id);
+        }
+
+        return $this->jsonResponse( $this->get_cards($patient_id));
+    }
+
+    public function retrives($patient_id, $card_id) {
+        
+        $c = $this->gateway(null, true);
+
+        $card =  $this->get_card($card_id);
+
+        if ($card && trim($card->subscription_id) != '') {
+            try {
+                $c->reference_code( time() );
+                $c->retrieve_subscription($card->subscription_id);
+                // $this->VN_Patient_Cards_Model->delete_card($patient_id, $card_id);
+            } catch ( Exception $e ) {
+            
+                return $this->jsonResponse([
+                    'error' => $e->getCode() . ': ' . $e->getMessage() . '<br/>' . PHP_EOL
+                ]);
+            }
+            
+            // $whereClause = " WHERE id = {$card_id} AND patient_id = {$patient_id}";
+            // __Database::__delete("vn_patient_cards", $whereClause);
+            print_r($c);die();
             // $this->VN_Patient_Cards_Model->delete_card($patient_id, $card_id);
         }
 

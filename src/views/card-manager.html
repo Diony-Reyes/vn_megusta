@@ -22,6 +22,7 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:400,500,700">
 
+
     <style>
         #containerForm {
             padding: 0;
@@ -31,15 +32,126 @@
 
 
 
-<div style="color:red">
+{# <div style="color:red"> #}
 
-    {{gett.message}}
+    {# {{gett.message}} #}
 
-    <br>
-    <br>
-</div>
+    {# <br>
+    <br> #}
+{# </div> #}
 
-{% if  (list_cards | e) %}
+
+     {% if gett.reason_code == '481'  %}
+        <div id="greenContainer" style="height: 630px;">
+                <div id="paymentSuccess" style=" color: red;
+    text-align: center;
+    width: 100%;
+    display: block !important;">
+                    Pago rechazado
+                </div>
+
+                <div id="amount"> RD${{amount}} </div>
+
+                <div class="notes">
+                    No. de Autorización  {{gett.auth_code}}
+                </div>
+
+                <div class="notes">
+                    Megusta.do
+                </div>
+
+                <div class="notes">
+                    ID Transacción  {{gett.transaction_id}}
+                </div>
+
+                <a href="{{link}}"> <div class="btn close--modal closeit" data-dismiss="modal" aria-label="Close" >Volver</div></a>
+            </div>
+{% else  %}
+
+
+
+ {% if gett.req_transaction_type == 'sale'  %}
+            <div id="greenContainer" style="height: 630px;">
+                <div id="paymentSuccess">
+                    <div class="checked"></div> Pago realizado con éxito
+                </div>
+
+                <div id="amount"> RD${{amount}} </div>
+
+                <div class="notes">
+                    No. de Autorización  {{gett.auth_code}}
+                </div>
+
+                <div class="notes">
+                    Megusta.do
+                </div>
+
+                <div class="notes">
+                    ID Transacción  {{gett.transaction_id}}
+                </div>
+
+                <div class="btn close--modal closetodeal" data-dismiss="modal " aria-label="Close">Terminar</div>
+            </div>
+       {% elseif gett.req_transaction_type == 'create_payment_token,sale'  %}
+            <div id="greenContainer">
+                <div id="paymentSuccess">
+                    <div class="checked"></div> Pago realizado con éxito
+                </div>
+
+                <div class="notes" style="margin-top: 0;">
+                    Tarjeta Agregada
+                </div>
+
+                <div id="amount"> RD${{amount}} </div>
+
+                <div class="notes">
+                    No. de Autorización  {{gett.auth_code}}
+                </div>
+
+                <div class="notes">
+                    Megusta.do
+                </div>
+
+                <div class="notes">
+                    ID Transacción  {{gett.transaction_id}}
+                </div>
+
+                <div class="btn close--modal closetodeal" data-dismiss="modal" aria-label="Close" style="margin-top: 5%;">Terminar</div>
+            </div>
+       {% elseif gett.req_transaction_type == 'create_payment_token'  %}
+            <div id="greenContainer">
+                <div id="paymentSuccess">
+                    <div class="checked"></div> Tarjeta agregada con exito
+                </div>
+
+                <div class="notes" style="margin-top: 0;">
+                    Tarjeta Agregada
+                </div>
+
+                {# <div id="amount"> RD${{amount}} </div> #}
+
+                <div class="notes">
+                    {# No. de Autorización  {{gett.auth_code}} #}
+                </div>
+
+                <div class="notes">
+                    {# Megusta.do #}
+                </div>
+
+                <div class="notes">
+                    ID Transacción  {{gett.transaction_id}}
+                </div>
+
+                <a href="{{link}}"> <div class="btn close--modal closeit" data-dismiss="modal" aria-label="Close" >Terminar</div></a>
+            </div>
+
+        {% else  %}
+  
+
+
+
+
+ {% if  (list_cards | e) %}
      <div id="makePayment">
         {# <form action="https://secureacceptance.cybersource.com/silent/pay" method="post" id="form_pay_app"> #}
          <form action="https://testsecureacceptance.cybersource.com/silent/pay" method="post" id="form_pay_app"> 
@@ -47,7 +159,7 @@
                 <div class="title">Realizar Pago</div>
 
                 <div class="amount">
-                    <sup>RD$</sup>1,000
+                    <sup>RD$</sup>{{amount}}
                 </div>
 
                 <div class="doctor">
@@ -77,11 +189,11 @@
                  {{data.vn_fields | raw }}
                 <button type="submit" id="submit" value="Confirm" class="btn btn-primary add-button-modal">Continuar</button>
         </form>
-                <div class="btn close--modal" data-dismiss="modal" aria-label="Close">Cerrar</div>
+                <div class="btn close--modal closeit" data-dismiss="modal" aria-label="Close">Cerrar</div>
             </div>
         {{ data.vn_append | raw}}
     </div>
-{% else  %}
+ {% else  %}
 
 
 
@@ -89,22 +201,15 @@
 <div id="containerForm">
     <div class="messageInfo">
 
-        <b>Agregue su método de pago para pagar su membresía de manera recurrente y automática. El costo es de
-            <?=amount?> pesos mensuales.</b>
-        <br>
-
-
-
+{% if amount != '0.00'  %}
         <b>Debe registrar una tarjeta para poder efectuar tus pagos. Esta tarjeta se utilizara para futuros pagos.
             <span>Monto: RD</span>
-            <?=amount?>.
-                <span>Doctor:</span>
-                <?=appointment_info->doctor_firstname.' '.appointment_info->doctor_lastname?>
+            {{amount}}
+              
         </b>
-
+{% endif  %}
 
     </div>
-    <br>
 
     <div class="title">Agregar método de pago</div>
 
@@ -122,23 +227,23 @@
 
             <div class="inputElements">
                 <label for="number">Número de tarjeta</label>
-                <input class="modal-input" type="text" name="card_number" id="number" placeholder="Numero de tarjeta" data-mask='0000000000000000'
+                <input class="modal-input" type="text" value="4111111111111111" name="card_number" id="number" placeholder="Numero de tarjeta" data-mask='0000000000000000'
                 />
             </div>
             <div class="inputElements">
                 <label for="number">CVN</label>
-                <input class="modal-input" type="text" name="card_cvn" id="number_" placeholder="CVN" data-mask='000' />
+                <input class="modal-input" type="text" name="card_cvn" value="929" id="number_" placeholder="CVN" data-mask='000' />
             </div>
 
             <div class="inputElements">
                 <label for="date">Fecha de vencimiento</label>
-                <input class="modal-input" type="text" name="card_expiry_date" id="date" placeholder="MM/AAAA" data-mask="00-0000" />
+                <input class="modal-input" type="text" name="card_expiry_date" id="date" value="09-2020" placeholder="MM/AAAA" data-mask="00-0000" />
             </div>
 
             {{data.vn_fields | raw }}
 
             <button type="submit" id="submit" value="Confirm" class="btn btn-primary add-button-modal">Agregar</button>
-            <div class="btn close--modal" data-dismiss="modal" aria-label="Close">Cerrar</div>
+            <div class="btn close--modal closeit" data-dismiss="modal" aria-label="Close">Cerrar</div>
         </form>
 
         <div class="termsConditions">
@@ -150,6 +255,8 @@
 </div>
 
 {% endif %}
+{% endif %}
+{% endif %}
 
 <script src="https://buscamed.do/assets/js/jquery-1.9.1.min.js"></script>
 <script src="https://buscamed.do/assets/js/bootstrap.min.js"></script>
@@ -158,3 +265,23 @@
 <script src="https://buscamed.do/_buscamedv/assets/plugins/fullcalendar/lib/moment.min.js"></script>
 <script src="https://buscamed.do/_buscamedv/assets/plugins/fullcalendar/lib/es-do.js"></script>
 <script src="https://buscamed.do/assets/js/payment_modal.js"></script>
+
+<script> 
+    $(".closeit").click (function ()  {
+        window.parent.$(window.parent.document).trigger('complete');
+        window.parent.triggerComplete();
+        customEvent("ccc");
+    });
+    $(".closetodeal").click (function ()  {
+        window.parent.closeTodeal();
+        customEvent("ccc");
+    });
+    $("#myModal").show();
+    function customEvent(name) {
+        document.dispatchEvent(new CustomEvent(name, {
+            bubbles: true,
+            cancelable: true
+        }));
+    }
+
+</script>

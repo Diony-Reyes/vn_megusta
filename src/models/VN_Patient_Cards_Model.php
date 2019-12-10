@@ -21,6 +21,7 @@
             // return [];
             return  $result->fetchAll(PDO::FETCH_OBJ);
         }
+      
 
         public function get_card($card_id) {
             $connect = $this->connectorDB();

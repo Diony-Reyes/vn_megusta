@@ -11,9 +11,9 @@
 
         public static function displayErrors()
         {
-            ini_set('display_errors', 1);
-            ini_set('display_startup_errors', 1);
-            error_reporting(E_ALL);
+            // ini_set('display_errors', 1);
+            // ini_set('display_startup_errors', 1);
+            // error_reporting(E_ALL);
         }
 
 
@@ -68,6 +68,7 @@
             // append the where statement
             $sql .= $whereSQL;
 
+            // print_r($sql);die();
             try {
                 $result = __Database::connectorDB()->query($sql);
 
@@ -123,7 +124,7 @@
 
         public static function __dbConnection()
         {
-            return new mysqli('10.128.0.4', 'root', '1921680809@Admintec008143', 'movil');
+            return new mysqli('localhost', 'josue', 'Admintec001', 'megusta_site');
         }
     }
 ?>

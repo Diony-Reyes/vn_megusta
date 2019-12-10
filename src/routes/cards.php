@@ -27,7 +27,7 @@
     });
 
     // delete card
-    $app->delete("/delete_card/{patient_id}/{card_id}", function(Request $request, Response $response, $arg) {
+    $app->post("/delete_card/{patient_id}/{card_id}", function(Request $request, Response $response, $arg) {
         $webservice = new Webservice();
 
         $patient_id = $arg['patient_id'];

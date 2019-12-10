@@ -9,6 +9,7 @@
     require_once 'Clients.php';
     require_once 'visanet/Visanet.php';
     require_once 'visanet/Payments.php';
+    require_once 'visanet/Uhelper.php';
 
     class Webservice extends db {
         use VN_Patient_Cards_Model;
@@ -19,5 +20,9 @@
         use Clients;
         use Visanet;
         use Payments;
+
+        public function generateHash() {
+           return  strtoupper(UHelper::hash(null,12));
+        }
     }
 ?>
