@@ -1,6 +1,6 @@
 <?php 
     class db {
-        private $dbHost = "localhost";
+        private $dbHost = "10.0.0.8";
         private $dbUser = "josue";
         private $dbPassword = 'Admintec001';
         private $dbName = "megusta_site";

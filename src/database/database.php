@@ -124,7 +124,7 @@
 
         public static function __dbConnection()
         {
-            return new mysqli('localhost', 'josue', 'Admintec001', 'megusta_site');
+            return new mysqli('10.0.0.8', 'josue', 'Admintec001', 'megusta_site');
         }
     }
 ?>

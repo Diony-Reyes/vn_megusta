@@ -1,133 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title></title>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title></title>
+        <link rel="stylesheet" href="https://buscamed.do/assets/css/bootstrap.min.css" />
+        <!-- Select2 -->
+        <link rel="stylesheet" href="https://buscamed.do/assets/new_css/slimselect.css" />
+        <link rel="stylesheet" href="https://buscamed.do/assets/css/select2.min.css" />
+        <!-- Theme style -->
+        <link rel="stylesheet" href="https://buscamed.do/assets/css/AdminLTE.min.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:400,500,700" />
+        <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/general.css" />
+        <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/tablet.css" />
+        <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/movile.css" />
+        <link rel="stylesheet" href="https://buscamed.do/assets/patient/style.css" />
 
-    <link rel="stylesheet" href="https://buscamed.do/assets/css/bootstrap.min.css" />
-    <!-- Select2 -->
-    <link rel="stylesheet" href="https://buscamed.do/assets/new_css/slimselect.css" />
-    <link rel="stylesheet" href="https://buscamed.do/assets/css/select2.min.css" />
-    <!-- Theme style -->
-    <link rel="stylesheet" href="https://buscamed.do/assets/css/AdminLTE.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:400,500,700" />
-    <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/general.css" />
-    <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/tablet.css" />
-    <link rel="stylesheet" href="https://buscamed.do/assets/css/payment_css/movile.css" />
-    <link rel="stylesheet" href="https://buscamed.do/assets/patient/style.css" />
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <style>
+            .sec_2 .cont_button_payment {
+                justify-content: flex-start;
+                margin-top: 3%;
+            }
 
-    <style>
-        .sec_2 .cont_button_payment {
-            justify-content: flex-start;
-            margin-top: 3%;
-        }
+            .cards {
+                display: grid;
+                grid-template-columns: 75% 20%;
+                column-gap: 2%;
+                row-gap: 10%;
+            }
 
-        .cards {
-            display: grid;
-            grid-template-columns: 75% 20%;
-            column-gap: 2%;
-            row-gap: 10%;
-        }
+            .delete_pay_method {
+                width: 100%;
+            }
 
-        .delete_pay_method {
-            width: 100%;
-        }
+            #add_card_modal .modal-dialog-modification {
+                max-width: 100%;
+                width: auto;
+                height: auto;
+            }
+        </style>
+    </head>
 
-        #add_card_modal .modal-dialog-modification {
-            max-width: 100%;
-            width: auto;
-            height: auto;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="patientId hidden">{{ patient_id }}</div>
-    <!--modal-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-modification" role="document">
-            <div class="modal-content modal-content-modificaition">
-                <section class="modal-body modal-body-modification">
-                    <button type="button" class="close close-modification" data-dismiss="modal" aria-label="Close" style="position: absolute; right: 3%;">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </section>
+    <body>
+        <div class="patientId hidden">{{ patient_id }}</div>
+        <!--modal-->
+        <div
+            class="modal fade"
+            id="exampleModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-modification" role="document">
+                <div class="modal-content modal-content-modificaition">
+                    <section class="modal-body modal-body-modification">
+                        <button
+                            type="button"
+                            class="close close-modification"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                            style="position: absolute; right: 3%;"
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </section>
+                </div>
             </div>
         </div>
-    </div>
-    <section class="max-width-144">
-        <section class="cont_section">
-            <form class="form_1" style="display: none">
-                <div class="inputs_general">
-                    <span>1</span>
-                    <div class="input-group">
-                        <p>Nombre de la factura</p>
-                        <p>13 Jun 2019</p>
-                        <p>RD$100.00</p>
+        <section class="max-width-144">
+            <section class="cont_section">
+                <form class="form_1" style="display: none">
+                    <div class="inputs_general">
+                        <span>1</span>
+                        <div class="input-group">
+                            <p>Nombre de la factura</p>
+                            <p>13 Jun 2019</p>
+                            <p>RD$100.00</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="inputs_general">
-                    <span>2</span>
-                    <div class="input-group">
-                        <p>Nombre de la factura</p>
-                        <p>13 Jun 2019</p>
-                        <p>RD$100.00</p>
+                    <div class="inputs_general">
+                        <span>2</span>
+                        <div class="input-group">
+                            <p>Nombre de la factura</p>
+                            <p>13 Jun 2019</p>
+                            <p>RD$100.00</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="inputs_general">
-                    <span>3</span>
-                    <div class="input-group">
-                        <p>Nombre de la factura</p>
-                        <p>13 Jun 2019</p>
-                        <p>RD$100.00</p>
+                    <div class="inputs_general">
+                        <span>3</span>
+                        <div class="input-group">
+                            <p>Nombre de la factura</p>
+                            <p>13 Jun 2019</p>
+                            <p>RD$100.00</p>
+                        </div>
                     </div>
-                </div>
 
-                <p class="total">Total a pagar
-                    <span>RD$00.00</span>
-                </p>
-            </form>
+                    <p class="total">
+                        Total a pagar
+                        <span>RD$00.00</span>
+                    </p>
+                </form>
 
-            <section class="sec_1" style="display: none">
-                <button class="button_paymant_2">
-                    Realizar pago
-                </button>
-            </section>
-
-            <section class="sec_2">
-                <h1 class="">Seleccionar método de pago</h1>
-
-                <div class="cards"></div>
-
-                <div class="dots-container" style="display: none; margin-bottom: 5%">
-                    <div class="dots">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                </div>
-
-                <div class="cont_button_payment">
-                    <button class="button_payment btn btn-primary" type="button">
-                        Agregar metodo de pago
+                <section class="sec_1" style="display: none">
+                    <button class="button_paymant_2">
+                        Realizar pago
                     </button>
-                </div>
+                </section>
+
+                <section class="sec_2">
+                    <h1 class="">Seleccionar método de pago</h1>
+
+                    <div class="cards"></div>
+
+                    <div class="dots-container" style="display: none; margin-bottom: 5%">
+                        <div class="dots">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+
+                    <div class="cont_button_payment">
+                        <button class="button_payment btn btn-primary" type="button">
+                            Agregar metodo de pago
+                        </button>
+                    </div>
+                </section>
             </section>
         </section>
-    </section>
 
-    <!--modal-->
-    <div class="modal fade" id="add_card_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-modification" role="document">
-            <div class="modal-content modal-content-modificaition">
-                <!-- <div class="modal-header modal-header-modification">
+        <!--modal-->
+        <div
+            class="modal fade"
+            id="add_card_modal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-modification" role="document">
+                <div class="modal-content modal-content-modificaition">
+                    <!-- <div class="modal-header modal-header-modification">
                             <h5 class="modal-title modal-title-modification" id="exampleModalLabel">
                                 Registrar Método de pago
                             </h5>
@@ -135,28 +155,38 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div> -->
-                <section class="modal-body modal-body-modification">
-                    <button type="button" class="close close-modification" data-dismiss="modal" aria-label="Close" style="position: absolute; right: 3%;">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <section class="modal-body modal-body-modification">
+                        <button
+                            type="button"
+                            class="close close-modification"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                            style="position: absolute; right: 3%;"
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
 
-                    <iframe id="iframe_from" src="https://megusta.do/webservice/card-manager/{{ patient_id }}/0?add_card=true" frameborder="0"
-                        width="100%" height="100%"></iframe>
-                </section>
-                <!-- <div class="modal-footer">
+                        <iframe
+                            id="iframe_from"
+                            src="https://megusta.do/webservice/card-manager/{{ patient_id }}/0?add_card=true"
+                            frameborder="0"
+                            width="100%"
+                            height="100%"
+                        ></iframe>
+                    </section>
+                    <!-- <div class="modal-footer">
                             <button class="btn btn-danger close--modal" data-dismiss="modal" aria-label="Close">Cerrar</button>
                         </div> -->
+                </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://buscamed.do/assets/js/jquery-1.9.1.min.js"></script>
-    <script src="https://buscamed.do/assets/js/bootstrap.min.js"></script>
-    <script src="https://buscamed.do/assets/new_js/slimselect.js"></script>
-    <script src="https://buscamed.do/assets/js/masking.js"></script>
-    <script src="https://buscamed.do/_buscamedv/assets/plugins/fullcalendar/lib/moment.min.js"></script>
-    <script src="https://buscamed.do/_buscamedv/assets/plugins/fullcalendar/lib/es-do.js"></script>
-    <script src="../src/assets/js/payment-patient.js"></script>
-</body>
-
+        <script src="https://buscamed.do/assets/js/jquery-1.9.1.min.js"></script>
+        <script src="https://buscamed.do/assets/js/bootstrap.min.js"></script>
+        <script src="https://buscamed.do/assets/new_js/slimselect.js"></script>
+        <script src="https://buscamed.do/assets/js/masking.js"></script>
+        <script src="https://buscamed.do/_buscamedv/assets/plugins/fullcalendar/lib/moment.min.js"></script>
+        <script src="https://buscamed.do/_buscamedv/assets/plugins/fullcalendar/lib/es-do.js"></script>
+        <script src="../src/assets/js/payment-patient.js"></script>
+    </body>
 </html>
